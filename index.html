@@ -1,55 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="js/paper.js"></script>
-    <style>
-        body { margin: 0; background: #1a1a1a; }
-        canvas { display: block; }
-        #toolbar {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
-            padding: 10px;
-            color: white;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/paper/dist/paper-full.js"></script>
 </head>
 <body>
-    <div id="toolbar">
-        <button onclick="setTool('line')">Line</button>
-        <button onclick="setTool('polyline')">Polyline</button>
-        <button onclick="setTool('circle')">Circle</button>
-    </div>
-    
     <canvas id="canvas" resize></canvas>
-    
-    <script type="text/paperscript" canvas="canvas">
-        var currentTool = 'line';
-        var currentPath = null;
-        
-        function onMouseDown(event) {
-            if (currentTool === 'line') {
-                currentPath = new Path();
-                currentPath.strokeColor = 'cyan';
-                currentPath.strokeWidth = 2;
-                currentPath.add(event.point);
-            }
-        }
-        
-        function onMouseUp(event) {
-            if (currentPath) {
-                currentPath.add(event.point);
-                currentPath = null;
-            }
-        }
-    </script>
-    
-    <script>
-        function setTool(tool) {
-            currentTool = tool;
-        }
-    </script>
-</body>
 
+    <!-- This loads the gist code (which draws a circle using Paper.js) -->
+    <script src="https://gist.github.com/mikechambers/4113108.js"></script>
+</body>
 </html>
