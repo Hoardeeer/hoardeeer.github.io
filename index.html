@@ -2,17 +2,46 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Paper.js Test</title>
 
     <!-- Load Paper.js -->
     <script src="https://unpkg.com/paper/dist/paper-full.js"></script>
-</head>
-<body style="margin:0; background:#111;">
 
-    <!-- The canvas where the gist draws -->
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
     <canvas id="canvas" resize></canvas>
 
-    <!-- Load the gist as a normal JavaScript file -->
-    <script src="https://gist.github.com/mikechambers/4113108.js"></script>
+    <script>
+        // Setup the canvas for Paper.js
+        paper.setup('canvas');
 
+        // Draw a simple red circle in the center
+        const center = paper.view.center;
+        const circle = new paper.Path.Circle({
+            center: center,
+            radius: 80,
+            strokeColor: 'red',
+            strokeWidth: 5
+        });
+
+        // Add interactive test
+        paper.view.onMouseDown = function(event) {
+            new paper.Path.Circle({
+                center: event.point,
+                radius: 20,
+                fillColor: 'cyan'
+            });
+        };
+    </script>
 </body>
 </html>
