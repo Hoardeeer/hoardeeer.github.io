@@ -2,18 +2,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Paper.js Test</title>
+    <title>Paper.js Center Test</title>
 
-    <!-- Load Paper.js -->
     <script src="https://unpkg.com/paper/dist/paper-full.js"></script>
 
     <style>
         body {
             margin: 0;
             background: #111;
+            overflow: hidden;
         }
         canvas {
             display: block;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
@@ -22,19 +24,32 @@
     <canvas id="canvas" resize></canvas>
 
     <script>
-        // Setup the canvas for Paper.js
         paper.setup('canvas');
 
-        // Draw a simple red circle in the center
-        const center = paper.view.center;
-        const circle = new paper.Path.Circle({
-            center: center,
-            radius: 80,
-            strokeColor: 'red',
-            strokeWidth: 5
-        });
+        let centerCircle;
 
-        // Add interactive test
+        function drawCenteredCircle() {
+            // Clear the existing project
+            paper.project.clear();
+
+            // Draw a circle in the center of the view
+            centerCircle = new paper.Path.Circle({
+                center: paper.view.center,
+                radius: 80,
+                strokeColor: 'red',
+                strokeWidth: 5
+            });
+        }
+
+        // Draw initial circle
+        drawCenteredCircle();
+
+        // Redraw center when window resizes
+        paper.view.onResize = function() {
+            drawCenteredCircle();
+        };
+
+        // Click to draw cyan dots
         paper.view.onMouseDown = function(event) {
             new paper.Path.Circle({
                 center: event.point,
