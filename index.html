@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Org Tool</title>
     <style>
         /* 1. RESET & BASIC SETUP */
@@ -11,58 +11,59 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background: #1e1e1e;
+            overflow: hidden; /* Prevent native scrollbars */
+            background: #1e1e1e; /* Fallback color */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            
-            /* CRITICAL FOR MOBILE: Disables browser handling of gestures so our JS can take over */
-            touch-action: none; 
         }
 
-        /* 2. BACKGROUND */
+        /* 2. PROFESSIONAL DARK BACKGROUND */
+        /* Using a subtle gradient to look modern and deep */
         .viewport {
             width: 100vw;
             height: 100vh;
             background: radial-gradient(circle at center, #2b2b2b 0%, #1a1a1a 100%);
-            cursor: grab;
+            cursor: grab; /* Indicates the area is pannable */
             position: relative;
-            overflow: hidden;
         }
 
         .viewport:active {
-            cursor: grabbing;
+            cursor: grabbing; /* Visual feedback when dragging */
         }
 
-        /* 3. THE WORLD CONTAINER */
+        /* 3. THE "WORLD" CONTAINER 
+           This is the element we will actually move and zoom. 
+        */
         #world {
             position: absolute;
             top: 0;
             left: 0;
-            width: 0;
+            width: 0; /* width/height 0 effectively makes (0,0) the origin */
             height: 0;
-            transform-origin: 0 0;
-            will-change: transform; /* Hint to browser for smoother rendering */
+            transform-origin: 0 0; /* Zoom relative to the top-left origin coordinates we calculate */
         }
 
-        /* 4. ORIGIN MARKERS */
+        /* 4. THE ORIGIN CIRCLE (0,0) */
         .origin-circle {
             position: absolute;
             width: 20px;
             height: 20px;
-            background-color: #ff5f56;
+            background-color: #ff5f56; /* A nice distinct coral/red */
             border-radius: 50%;
+            /* Center the circle exactly on (0,0) */
             top: -10px;
             left: -10px;
-            box-shadow: 0 0 15px rgba(255, 95, 86, 0.6);
+            box-shadow: 0 0 10px rgba(255, 95, 86, 0.6);
             z-index: 10;
         }
 
+        /* Optional: A grid to make movement easier to see */
         .grid-line {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.05);
             pointer-events: none;
         }
         
+        /* Simple label for the origin */
         .label {
             position: absolute;
             top: 15px;
@@ -72,33 +73,24 @@
             pointer-events: none;
             white-space: nowrap;
         }
-
-        /* Mobile Hint Styling */
-        .ui-hint {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            color: #666;
-            font-size: 14px;
-            pointer-events: none;
-            user-select: none;
-        }
     </style>
 </head>
 <body>
 
     <div class="viewport" id="viewport">
+        
         <div id="world">
+            
             <div class="origin-circle"></div>
             <div class="label">Origin (0, 0)</div>
 
             <div class="grid-line" style="width: 2000px; height: 1px; top: 0; left: -1000px;"></div>
             <div class="grid-line" style="width: 1px; height: 2000px; top: -1000px; left: 0;"></div>
+
         </div>
 
-        <div class="ui-hint">
-            Desktop: Scroll & Drag <br>
-            Mobile: Pinch & Drag
+        <div style="position: fixed; bottom: 20px; left: 20px; color: #666; font-size: 14px; pointer-events: none;">
+            Scroll to Zoom • Click & Drag to Pan
         </div>
     </div>
 
@@ -106,144 +98,73 @@
         const viewport = document.getElementById('viewport');
         const world = document.getElementById('world');
 
-        // --- STATE VARIABLES ---
+        // State variables
         let scale = 1;
-        let pointX = window.innerWidth / 2; // Position X
-        let pointY = window.innerHeight / 2; // Position Y
-        
-        // Mouse State
-        let isPanning = false;
-        let startX = 0, startY = 0;
+        let panning = false;
+        let pointX = window.innerWidth / 2; // Start centered
+        let pointY = window.innerHeight / 2;
+        let startX = 0;
+        let startY = 0;
 
-        // Touch State
-        let lastTouchDistance = 0;
-        let initialPinchScale = 1;
+        // Apply the initial transform
+        setTransform();
 
-        // Apply initial position
-        updateTransform();
+        // 1. ZOOM (Wheel Event)
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
 
-        // ============================
-        //     MOUSE EVENTS (DESKTOP)
-        // ============================
+            const xs = (e.clientX - pointX) / scale;
+            const ys = (e.clientY - pointY) / scale;
 
+            const delta = -e.deltaY;
+            
+            // Limit zoom speed and range
+            const factor = 1.1;
+            if (delta > 0) {
+                scale *= factor;
+            } else {
+                scale /= factor;
+            }
+
+            // Cap the zoom levels (optional)
+            // if (scale > 10) scale = 10;
+            // if (scale < 0.1) scale = 0.1;
+
+            pointX = e.clientX - xs * scale;
+            pointY = e.clientY - ys * scale;
+
+            setTransform();
+        }, { passive: false });
+
+        // 2. PANNING (Mouse Events)
         viewport.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            isPanning = true;
             startX = e.clientX - pointX;
             startY = e.clientY - pointY;
+            panning = true;
+        });
+
+        viewport.addEventListener('mouseup', () => {
+            panning = false;
+        });
+
+        viewport.addEventListener('mouseleave', () => {
+            panning = false;
         });
 
         viewport.addEventListener('mousemove', (e) => {
-            if (!isPanning) return;
             e.preventDefault();
+            if (!panning) return;
+            
             pointX = e.clientX - startX;
             pointY = e.clientY - startY;
-            updateTransform();
+            
+            setTransform();
         });
 
-        viewport.addEventListener('mouseup', () => isPanning = false);
-        viewport.addEventListener('mouseleave', () => isPanning = false);
-
-        viewport.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const xs = (e.clientX - pointX) / scale;
-            const ys = (e.clientY - pointY) / scale;
-            const delta = -e.deltaY;
-
-            (delta > 0) ? (scale *= 1.1) : (scale /= 1.1);
-            
-            pointX = e.clientX - xs * scale;
-            pointY = e.clientY - ys * scale;
-            updateTransform();
-        }, { passive: false });
-
-
-        // ============================
-        //      TOUCH EVENTS (MOBILE)
-        // ============================
-
-        viewport.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                // Single touch: Prepare to Pan
-                isPanning = true;
-                startX = e.touches[0].clientX - pointX;
-                startY = e.touches[0].clientY - pointY;
-            } else if (e.touches.length === 2) {
-                // Two touches: Prepare to Pinch
-                isPanning = false; // Stop panning if we are pinching
-                lastTouchDistance = getDistance(e.touches);
-            }
-        }, { passive: false });
-
-        viewport.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Stop browser scrolling
-
-            if (e.touches.length === 1 && isPanning) {
-                // --- 1. PANNING LOGIC ---
-                pointX = e.touches[0].clientX - startX;
-                pointY = e.touches[0].clientY - startY;
-                updateTransform();
-
-            } else if (e.touches.length === 2) {
-                // --- 2. PINCH ZOOM LOGIC ---
-                const currentDistance = getDistance(e.touches);
-                
-                // Get center point between two fingers
-                const center = getCenter(e.touches);
-                
-                // Calculate zoom factor based on distance change
-                // We limit speed slightly with * 0.005 for smoothness, or just ratio
-                const distanceRatio = currentDistance / lastTouchDistance;
-                
-                // Math for zooming into the specific center point
-                const xs = (center.x - pointX) / scale;
-                const ys = (center.y - pointY) / scale;
-
-                scale *= distanceRatio;
-
-                pointX = center.x - xs * scale;
-                pointY = center.y - ys * scale;
-
-                lastTouchDistance = currentDistance;
-                updateTransform();
-            }
-        }, { passive: false });
-
-        viewport.addEventListener('touchend', (e) => {
-            // If we lift one finger but leave another, reset the pan anchor
-            if (e.touches.length === 1) {
-                isPanning = true;
-                startX = e.touches[0].clientX - pointX;
-                startY = e.touches[0].clientY - pointY;
-            }
-        });
-
-
-        // ============================
-        //        HELPER FUNCTIONS
-        // ============================
-
-        function updateTransform() {
-            // Limit scale to reasonable bounds (optional)
-            if (scale < 0.1) scale = 0.1;
-            if (scale > 50) scale = 50;
-            
+        // Helper function to apply CSS
+        function setTransform() {
             world.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-        }
-
-        // Calculate distance between two touch points
-        function getDistance(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // Calculate center point between two touch points
-        function getCenter(touches) {
-            return {
-                x: (touches[0].clientX + touches[1].clientX) / 2,
-                y: (touches[0].clientY + touches[1].clientY) / 2
-            };
         }
     </script>
 </body>
