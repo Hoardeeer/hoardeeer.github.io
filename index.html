@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draft 0.0.3</title>
+    <title>Draft 0.0.4</title>
     <style>
         /* 1. RESET & BASIC SETUP */
         body, html {
@@ -108,6 +108,11 @@
 
         // Apply the initial transform
         setTransform();
+
+        // Disable context menu on right click
+        viewport.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
 
         // 1. ZOOM (Wheel Event)
         viewport.addEventListener('wheel', (e) => {
