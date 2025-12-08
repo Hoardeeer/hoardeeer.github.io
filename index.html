@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draft 0.0.2</title>
+    <title>Draft 0.0.3</title>
     <style>
         /* 1. RESET & BASIC SETUP */
         body, html {
@@ -165,6 +165,7 @@
         // 3. TOUCH SUPPORT (Mobile/Tablet)
         let lastTouchDistance = 0;
         let initialPinchScale = 1;
+        let lastTouchCenter = { x: 0, y: 0 };
 
         viewport.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -175,15 +176,23 @@
                 startY = e.touches[0].clientY - pointY;
                 panning = true;
             } else if (e.touches.length === 2) {
-                // Two finger touch - prepare for pinch zoom
+                // Two finger touch - prepare for pinch zoom + pan
                 panning = false;
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
+                
+                // Store initial distance for zoom
                 lastTouchDistance = Math.hypot(
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
                 initialPinchScale = scale;
+                
+                // Store initial center point for panning
+                lastTouchCenter = {
+                    x: (touch1.clientX + touch2.clientX) / 2,
+                    y: (touch1.clientY + touch2.clientY) / 2
+                };
             }
         }, { passive: false });
 
@@ -196,11 +205,11 @@
                 pointY = e.touches[0].clientY - startY;
                 setTransform();
             } else if (e.touches.length === 2) {
-                // Two finger pinch zoom
+                // Two finger pinch zoom + pan (industry standard)
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
                 
-                // Calculate center point between fingers
+                // Calculate current center point between fingers
                 const centerX = (touch1.clientX + touch2.clientX) / 2;
                 const centerY = (touch1.clientY + touch2.clientY) / 2;
                 
@@ -210,16 +219,25 @@
                     touch2.clientY - touch1.clientY
                 );
                 
-                // Calculate zoom point in world coordinates
-                const xs = (centerX - pointX) / scale;
-                const ys = (centerY - pointY) / scale;
+                // Calculate zoom point in world coordinates (before zoom)
+                const xs = (lastTouchCenter.x - pointX) / scale;
+                const ys = (lastTouchCenter.y - pointY) / scale;
                 
                 // Update scale based on pinch distance change
                 scale = initialPinchScale * (currentDistance / lastTouchDistance);
                 
-                // Update position to keep zoom centered on pinch point
-                pointX = centerX - xs * scale;
-                pointY = centerY - ys * scale;
+                // Apply zoom transformation
+                pointX = lastTouchCenter.x - xs * scale;
+                pointY = lastTouchCenter.y - ys * scale;
+                
+                // Apply pan based on center point movement
+                const deltaX = centerX - lastTouchCenter.x;
+                const deltaY = centerY - lastTouchCenter.y;
+                pointX += deltaX;
+                pointY += deltaY;
+                
+                // Update last center for continuous panning
+                lastTouchCenter = { x: centerX, y: centerY };
                 
                 setTransform();
             }
@@ -247,4 +265,3 @@
     </script>
 </body>
 </html>
-
