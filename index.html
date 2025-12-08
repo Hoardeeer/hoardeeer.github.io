@@ -14,9 +14,7 @@
             overflow: hidden;
             background: #1e1e1e;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            
-            /* CRITICAL FOR MOBILE: Disables browser handling of gestures so our JS can take over */
-            touch-action: none; 
+            touch-action: none; /* Disables browser handling of gestures */
         }
 
         /* 2. BACKGROUND */
@@ -41,7 +39,7 @@
             width: 0;
             height: 0;
             transform-origin: 0 0;
-            will-change: transform; /* Hint to browser for smoother rendering */
+            will-change: transform;
         }
 
         /* 4. ORIGIN MARKERS */
@@ -73,7 +71,6 @@
             white-space: nowrap;
         }
 
-        /* Mobile Hint Styling */
         .ui-hint {
             position: fixed;
             bottom: 20px;
@@ -91,7 +88,6 @@
         <div id="world">
             <div class="origin-circle"></div>
             <div class="label">Origin (0, 0)</div>
-
             <div class="grid-line" style="width: 2000px; height: 1px; top: 0; left: -1000px;"></div>
             <div class="grid-line" style="width: 1px; height: 2000px; top: -1000px; left: 0;"></div>
         </div>
@@ -108,8 +104,8 @@
 
         // --- STATE VARIABLES ---
         let scale = 1;
-        let pointX = window.innerWidth / 2; // Position X
-        let pointY = window.innerHeight / 2; // Position Y
+        let pointX = window.innerWidth / 2;
+        let pointY = window.innerHeight / 2;
         
         // Mouse State
         let isPanning = false;
@@ -117,7 +113,7 @@
 
         // Touch State
         let lastTouchDistance = 0;
-        let initialPinchScale = 1;
+        let lastCenter = { x: 0, y: 0 }; // We now track the center point specifically
 
         // Apply initial position
         updateTransform();
@@ -150,10 +146,17 @@
             const ys = (e.clientY - pointY) / scale;
             const delta = -e.deltaY;
 
-            (delta > 0) ? (scale *= 1.1) : (scale /= 1.1);
+            let newScale = scale;
+            (delta > 0) ? (newScale *= 1.1) : (newScale /= 1.1);
             
-            pointX = e.clientX - xs * scale;
-            pointY = e.clientY - ys * scale;
+            // Apply constraints immediately
+            if (newScale < 0.1) newScale = 0.1;
+            if (newScale > 50) newScale = 50;
+
+            pointX = e.clientX - xs * newScale;
+            pointY = e.clientY - ys * newScale;
+            scale = newScale;
+
             updateTransform();
         }, { passive: false });
 
@@ -164,53 +167,66 @@
 
         viewport.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
-                // Single touch: Prepare to Pan
+                // 1 Finger: Simple Pan Setup
                 isPanning = true;
                 startX = e.touches[0].clientX - pointX;
                 startY = e.touches[0].clientY - pointY;
             } else if (e.touches.length === 2) {
-                // Two touches: Prepare to Pinch
-                isPanning = false; // Stop panning if we are pinching
+                // 2 Fingers: Pinch & Pan Setup
+                isPanning = false;
                 lastTouchDistance = getDistance(e.touches);
+                lastCenter = getCenter(e.touches); // Store where the center started
             }
         }, { passive: false });
 
         viewport.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Stop browser scrolling
+            e.preventDefault();
 
             if (e.touches.length === 1 && isPanning) {
-                // --- 1. PANNING LOGIC ---
+                // --- 1. SIMPLE PAN ---
                 pointX = e.touches[0].clientX - startX;
                 pointY = e.touches[0].clientY - startY;
                 updateTransform();
 
             } else if (e.touches.length === 2) {
-                // --- 2. PINCH ZOOM LOGIC ---
+                // --- 2. PINCH + PAN ---
+                
+                // A. Calculate new distance and center
                 const currentDistance = getDistance(e.touches);
-                
-                // Get center point between two fingers
-                const center = getCenter(e.touches);
-                
-                // Calculate zoom factor based on distance change
-                // We limit speed slightly with * 0.005 for smoothness, or just ratio
+                const currentCenter = getCenter(e.touches);
+
+                // B. Calculate scale change
                 const distanceRatio = currentDistance / lastTouchDistance;
-                
-                // Math for zooming into the specific center point
-                const xs = (center.x - pointX) / scale;
-                const ys = (center.y - pointY) / scale;
+                let newScale = scale * distanceRatio;
 
-                scale *= distanceRatio;
+                // Clamp scale limits
+                if (newScale < 0.1) newScale = 0.1;
+                if (newScale > 50) newScale = 50;
 
-                pointX = center.x - xs * scale;
-                pointY = center.y - ys * scale;
+                // C. THE MAGIC MATH:
+                // We calculate where the center point WAS in the "world" coordinates
+                // before this frame's movement.
+                const worldX = (lastCenter.x - pointX) / scale;
+                const worldY = (lastCenter.y - pointY) / scale;
 
+                // D. Apply the new scale
+                scale = newScale;
+
+                // E. Move (Pan) the world so that the "world point" we found in step C
+                // sits exactly under the NEW center finger position.
+                pointX = currentCenter.x - worldX * scale;
+                pointY = currentCenter.y - worldY * scale;
+
+                // F. Update state for next frame
                 lastTouchDistance = currentDistance;
+                lastCenter = currentCenter;
+                
                 updateTransform();
             }
         }, { passive: false });
 
         viewport.addEventListener('touchend', (e) => {
-            // If we lift one finger but leave another, reset the pan anchor
+            // Smoothly switch back to 1-finger pan if 1 finger remains
             if (e.touches.length === 1) {
                 isPanning = true;
                 startX = e.touches[0].clientX - pointX;
@@ -224,21 +240,15 @@
         // ============================
 
         function updateTransform() {
-            // Limit scale to reasonable bounds (optional)
-            if (scale < 0.1) scale = 0.1;
-            if (scale > 50) scale = 50;
-            
             world.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
         }
 
-        // Calculate distance between two touch points
         function getDistance(touches) {
             const dx = touches[0].clientX - touches[1].clientX;
             const dy = touches[0].clientY - touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
 
-        // Calculate center point between two touch points
         function getCenter(touches) {
             return {
                 x: (touches[0].clientX + touches[1].clientX) / 2,
