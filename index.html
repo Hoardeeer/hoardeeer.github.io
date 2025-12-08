@@ -1,85 +1,171 @@
-<script>
-paper.setup('canvas');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Org Tool</title>
+    <style>
+        /* 1. RESET & BASIC SETUP */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent native scrollbars */
+            background: #1e1e1e; /* Fallback color */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-let centerCircle;
+        /* 2. PROFESSIONAL DARK BACKGROUND */
+        /* Using a subtle gradient to look modern and deep */
+        .viewport {
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #2b2b2b 0%, #1a1a1a 100%);
+            cursor: grab; /* Indicates the area is pannable */
+            position: relative;
+        }
 
-// --- DRAW CENTER CIRCLE ---
-function drawCenteredCircle() {
-    paper.project.clear();
-    centerCircle = new paper.Path.Circle({
-        center: paper.view.center,
-        radius: 80,
-        strokeColor: 'red',
-        strokeWidth: 5
-    });
-}
-drawCenteredCircle();
+        .viewport:active {
+            cursor: grabbing; /* Visual feedback when dragging */
+        }
 
-paper.view.onResize = function () {
-    drawCenteredCircle();
-};
+        /* 3. THE "WORLD" CONTAINER 
+           This is the element we will actually move and zoom. 
+        */
+        #world {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0; /* width/height 0 effectively makes (0,0) the origin */
+            height: 0;
+            transform-origin: 0 0; /* Zoom relative to the top-left origin coordinates we calculate */
+        }
 
-// --- CLICK TO ADD DOT ---
-paper.view.onMouseDown = function(event) {
-    if (event.event.button === 0) { // left click
-        new paper.Path.Circle({
-            center: event.point,
-            radius: 20,
-            fillColor: 'cyan'
+        /* 4. THE ORIGIN CIRCLE (0,0) */
+        .origin-circle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff5f56; /* A nice distinct coral/red */
+            border-radius: 50%;
+            /* Center the circle exactly on (0,0) */
+            top: -10px;
+            left: -10px;
+            box-shadow: 0 0 10px rgba(255, 95, 86, 0.6);
+            z-index: 10;
+        }
+
+        /* Optional: A grid to make movement easier to see */
+        .grid-line {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+        }
+        
+        /* Simple label for the origin */
+        .label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="viewport" id="viewport">
+        
+        <div id="world">
+            
+            <div class="origin-circle"></div>
+            <div class="label">Origin (0, 0)</div>
+
+            <div class="grid-line" style="width: 2000px; height: 1px; top: 0; left: -1000px;"></div>
+            <div class="grid-line" style="width: 1px; height: 2000px; top: -1000px; left: 0;"></div>
+
+        </div>
+
+        <div style="position: fixed; bottom: 20px; left: 20px; color: #666; font-size: 14px; pointer-events: none;">
+            Scroll to Zoom • Click & Drag to Pan
+        </div>
+    </div>
+
+    <script>
+        const viewport = document.getElementById('viewport');
+        const world = document.getElementById('world');
+
+        // State variables
+        let scale = 1;
+        let panning = false;
+        let pointX = window.innerWidth / 2; // Start centered
+        let pointY = window.innerHeight / 2;
+        let startX = 0;
+        let startY = 0;
+
+        // Apply the initial transform
+        setTransform();
+
+        // 1. ZOOM (Wheel Event)
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+
+            const xs = (e.clientX - pointX) / scale;
+            const ys = (e.clientY - pointY) / scale;
+
+            const delta = -e.deltaY;
+            
+            // Limit zoom speed and range
+            const factor = 1.1;
+            if (delta > 0) {
+                scale *= factor;
+            } else {
+                scale /= factor;
+            }
+
+            // Cap the zoom levels (optional)
+            // if (scale > 10) scale = 10;
+            // if (scale < 0.1) scale = 0.1;
+
+            pointX = e.clientX - xs * scale;
+            pointY = e.clientY - ys * scale;
+
+            setTransform();
+        }, { passive: false });
+
+        // 2. PANNING (Mouse Events)
+        viewport.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX - pointX;
+            startY = e.clientY - pointY;
+            panning = true;
         });
-    }
-};
 
-// ---------------------------
-//       ZOOM FUNCTIONALITY
-// ---------------------------
-let zoomSpeed = 1.05;
-
-document.addEventListener("wheel", function (e) {
-    e.preventDefault();
-
-    const oldZoom = paper.view.zoom;
-    const mousePos = new paper.Point(e.clientX, e.clientY);
-    const viewPos = paper.view.viewToProject(mousePos);
-
-    // Zoom in or out
-    const newZoom = e.deltaY < 0 ? oldZoom * zoomSpeed : oldZoom / zoomSpeed;
-    paper.view.zoom = newZoom;
-
-    // Keep the zoom centered on cursor
-    const newViewPos = paper.view.viewToProject(mousePos);
-    const offset = newViewPos.subtract(viewPos);
-    paper.view.center = paper.view.center.add(offset);
-}, { passive: false });
-
-// ---------------------------
-//         PAN (MIDDLE MOUSE)
-// ---------------------------
-let isPanning = false;
-let panStart;
-
-paper.view.onMouseDown = function (event) {
-    if (event.event.button === 1) { // middle mouse
-        isPanning = true;
-        panStart = event.point;
-    } else if (event.event.button === 0) {
-        // Left-click create dots
-        new paper.Path.Circle({
-            center: event.point,
-            radius: 20,
-            fillColor: 'cyan'
+        viewport.addEventListener('mouseup', () => {
+            panning = false;
         });
-    }
-};
 
-paper.view.onMouseDrag = function (event) {
-    if (isPanning) {
-        const delta = panStart.subtract(event.point);
-        paper.view.center = paper.view.center.add(delta);
-    }
-};
+        viewport.addEventListener('mouseleave', () => {
+            panning = false;
+        });
 
-paper.view.onMouseUp = function () {
-    isPanning = false;
-};
-</script>
+        viewport.addEventListener('mousemove', (e) => {
+            e.preventDefault();
+            if (!panning) return;
+            
+            pointX = e.clientX - startX;
+            pointY = e.clientY - startY;
+            
+            setTransform();
+        });
+
+        // Helper function to apply CSS
+        function setTransform() {
+            world.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+        }
+    </script>
+</body>
+</html>
