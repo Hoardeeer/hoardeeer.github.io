@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Paper.js Center Test</title>
+    <title>Paper.js Pan & Zoom Test</title>
 
     <script src="https://unpkg.com/paper/dist/paper-full.js"></script>
 
@@ -29,10 +29,7 @@
         let centerCircle;
 
         function drawCenteredCircle() {
-            // Clear the existing project
             paper.project.clear();
-
-            // Draw a circle in the center of the view
             centerCircle = new paper.Path.Circle({
                 center: paper.view.center,
                 radius: 80,
@@ -41,15 +38,13 @@
             });
         }
 
-        // Draw initial circle
         drawCenteredCircle();
 
-        // Redraw center when window resizes
         paper.view.onResize = function() {
             drawCenteredCircle();
         };
 
-        // Click to draw cyan dots
+        // Draw cyan dots
         paper.view.onMouseDown = function(event) {
             new paper.Path.Circle({
                 center: event.point,
@@ -57,6 +52,72 @@
                 fillColor: 'cyan'
             });
         };
+
+
+        /* ----------------------------------------------------
+           PAN & ZOOM IMPLEMENTATION
+        ------------------------------------------------------- */
+
+        let isPanning = false;
+        let lastPos;
+
+        // PAN with middle mouse OR right mouse
+        paper.view.onMouseDown = function(event) {
+            if (event.event.button === 1 || event.event.button === 2) {
+                isPanning = true;
+                lastPos = event.point;
+                return;
+            }
+
+            // left-click = your existing action
+            new paper.Path.Circle({
+                center: event.point,
+                radius: 20,
+                fillColor: 'cyan'
+            });
+        };
+
+        paper.view.onMouseDrag = function(event) {
+            if (isPanning) {
+                let delta = lastPos.subtract(event.point);
+                paper.view.translate(delta);
+                lastPos = event.point;
+            }
+        };
+
+        paper.view.onMouseUp = function(event) {
+            isPanning = false;
+        };
+
+        // ZOOM with scroll wheel
+        let zoomFactor = 1.05;
+
+        document.addEventListener("wheel", function(e) {
+            const oldZoom = paper.view.zoom;
+
+            // Zoom direction
+            const factor = e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
+
+            // Mouse position in project coords BEFORE zoom
+            const mousePos = paper.view.viewToProject(
+                new paper.Point(e.clientX, e.clientY)
+            );
+
+            // Apply zoom
+            paper.view.zoom = oldZoom * factor;
+
+            // Mouse position AFTER zoom
+            const newMousePos = paper.view.viewToProject(
+                new paper.Point(e.clientX, e.clientY)
+            );
+
+            // Offset view so zoom centers on cursor
+            const offset = newMousePos.subtract(mousePos);
+            paper.view.translate(offset.negate());
+
+            e.preventDefault();
+        }, { passive: false });
+
     </script>
 </body>
 </html>
