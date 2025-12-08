@@ -14,7 +14,11 @@
             overflow: hidden;
             background: #1e1e1e;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: none; /* Disables browser handling of gestures */
+            touch-action: none;
+            
+            /* CRITICAL: Force crisp rendering */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* 2. BACKGROUND */
@@ -31,7 +35,7 @@
             cursor: grabbing;
         }
 
-        /* 3. THE WORLD CONTAINER */
+        /* 3. THE WORLD CONTAINER - OPTIMIZED FOR QUALITY */
         #world {
             position: absolute;
             top: 0;
@@ -40,6 +44,24 @@
             height: 0;
             transform-origin: 0 0;
             will-change: transform;
+            
+            /* QUALITY FIXES */
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            
+            /* Force crisp rendering */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        /* Apply crisp rendering to all children */
+        #world * {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         /* 4. ORIGIN MARKERS */
@@ -113,7 +135,7 @@
 
         // Touch State
         let lastTouchDistance = 0;
-        let lastCenter = { x: 0, y: 0 }; // We now track the center point specifically
+        let lastCenter = { x: 0, y: 0 };
 
         // Apply initial position
         updateTransform();
@@ -149,7 +171,7 @@
             let newScale = scale;
             (delta > 0) ? (newScale *= 1.1) : (newScale /= 1.1);
             
-            // Apply constraints immediately
+            // Apply constraints
             if (newScale < 0.1) newScale = 0.1;
             if (newScale > 50) newScale = 50;
 
@@ -167,15 +189,13 @@
 
         viewport.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
-                // 1 Finger: Simple Pan Setup
                 isPanning = true;
                 startX = e.touches[0].clientX - pointX;
                 startY = e.touches[0].clientY - pointY;
             } else if (e.touches.length === 2) {
-                // 2 Fingers: Pinch & Pan Setup
                 isPanning = false;
                 lastTouchDistance = getDistance(e.touches);
-                lastCenter = getCenter(e.touches); // Store where the center started
+                lastCenter = getCenter(e.touches);
             }
         }, { passive: false });
 
@@ -183,41 +203,36 @@
             e.preventDefault();
 
             if (e.touches.length === 1 && isPanning) {
-                // --- 1. SIMPLE PAN ---
+                // Simple Pan
                 pointX = e.touches[0].clientX - startX;
                 pointY = e.touches[0].clientY - startY;
                 updateTransform();
 
             } else if (e.touches.length === 2) {
-                // --- 2. PINCH + PAN ---
-                
-                // A. Calculate new distance and center
+                // Pinch + Pan
                 const currentDistance = getDistance(e.touches);
                 const currentCenter = getCenter(e.touches);
 
-                // B. Calculate scale change
+                // Calculate scale change
                 const distanceRatio = currentDistance / lastTouchDistance;
                 let newScale = scale * distanceRatio;
 
-                // Clamp scale limits
+                // Clamp scale
                 if (newScale < 0.1) newScale = 0.1;
                 if (newScale > 50) newScale = 50;
 
-                // C. THE MAGIC MATH:
-                // We calculate where the center point WAS in the "world" coordinates
-                // before this frame's movement.
+                // Calculate world coordinates
                 const worldX = (lastCenter.x - pointX) / scale;
                 const worldY = (lastCenter.y - pointY) / scale;
 
-                // D. Apply the new scale
+                // Apply new scale
                 scale = newScale;
 
-                // E. Move (Pan) the world so that the "world point" we found in step C
-                // sits exactly under the NEW center finger position.
+                // Reposition to keep the center point stable
                 pointX = currentCenter.x - worldX * scale;
                 pointY = currentCenter.y - worldY * scale;
 
-                // F. Update state for next frame
+                // Update for next frame
                 lastTouchDistance = currentDistance;
                 lastCenter = currentCenter;
                 
@@ -226,7 +241,6 @@
         }, { passive: false });
 
         viewport.addEventListener('touchend', (e) => {
-            // Smoothly switch back to 1-finger pan if 1 finger remains
             if (e.touches.length === 1) {
                 isPanning = true;
                 startX = e.touches[0].clientX - pointX;
@@ -240,7 +254,13 @@
         // ============================
 
         function updateTransform() {
-            world.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            // Use translate3d for hardware acceleration and better quality
+            // Round to nearest pixel to reduce sub-pixel rendering blur
+            const x = Math.round(pointX * 100) / 100;
+            const y = Math.round(pointY * 100) / 100;
+            const s = Math.round(scale * 10000) / 10000;
+            
+            world.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${s})`;
         }
 
         function getDistance(touches) {
