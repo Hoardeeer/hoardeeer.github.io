@@ -117,7 +117,7 @@
 
         // Touch State
         let lastTouchDistance = 0;
-        let lastTouchCenter = { x: 0, y: 0 };
+        let initialPinchScale = 1;
 
         // Apply initial position
         updateTransform();
@@ -169,10 +169,9 @@
                 startX = e.touches[0].clientX - pointX;
                 startY = e.touches[0].clientY - pointY;
             } else if (e.touches.length === 2) {
-                // Two touches: Initialize pinch with both distance and center
-                isPanning = false;
+                // Two touches: Prepare to Pinch
+                isPanning = false; // Stop panning if we are pinching
                 lastTouchDistance = getDistance(e.touches);
-                lastTouchCenter = getCenter(e.touches);
             }
         }, { passive: false });
 
@@ -180,38 +179,32 @@
             e.preventDefault(); // Stop browser scrolling
 
             if (e.touches.length === 1 && isPanning) {
-                // --- 1. PANNING LOGIC (Single Touch) ---
+                // --- 1. PANNING LOGIC ---
                 pointX = e.touches[0].clientX - startX;
                 pointY = e.touches[0].clientY - startY;
                 updateTransform();
 
             } else if (e.touches.length === 2) {
-                // --- 2. PINCH ZOOM + PAN LOGIC (Two Touches) ---
+                // --- 2. PINCH ZOOM LOGIC ---
                 const currentDistance = getDistance(e.touches);
-                const currentCenter = getCenter(e.touches);
                 
-                // Calculate how much the center point moved (PAN component)
-                const centerDeltaX = currentCenter.x - lastTouchCenter.x;
-                const centerDeltaY = currentCenter.y - lastTouchCenter.y;
+                // Get center point between two fingers
+                const center = getCenter(e.touches);
                 
                 // Calculate zoom factor based on distance change
+                // We limit speed slightly with * 0.005 for smoothness, or just ratio
                 const distanceRatio = currentDistance / lastTouchDistance;
                 
-                // Get the point in world space we're zooming toward
-                const xs = (lastTouchCenter.x - pointX) / scale;
-                const ys = (lastTouchCenter.y - pointY) / scale;
+                // Math for zooming into the specific center point
+                const xs = (center.x - pointX) / scale;
+                const ys = (center.y - pointY) / scale;
 
-                // Apply zoom
                 scale *= distanceRatio;
 
-                // Update position: zoom effect + pan effect
-                pointX = lastTouchCenter.x - xs * scale + centerDeltaX;
-                pointY = lastTouchCenter.y - ys * scale + centerDeltaY;
+                pointX = center.x - xs * scale;
+                pointY = center.y - ys * scale;
 
-                // Update tracking variables
                 lastTouchDistance = currentDistance;
-                lastTouchCenter = currentCenter;
-                
                 updateTransform();
             }
         }, { passive: false });
