@@ -74,9 +74,13 @@ body, html {
 }
 
 .chat-input-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    
     width: 90%;
     max-width: 800px;
-    margin: 80px auto;
     
     display: flex;
     align-items: center;
