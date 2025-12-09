@@ -18,13 +18,23 @@
         <div class="controls-hint">
             Scroll to Zoom • Click & Drag to Pan
         </div>
+    </div>
 
-        <div class="chat-input-container">
-            <div class="chat-plus">+</div>
-            <input class="chat-input" placeholder="Herhangi bir şey sor" />
-            <div class="chat-icons">
-                <span class="mic">🎤</span>
-                <span class="wave">🎙️</span>
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <button id="btn-add-image">+ Add Image</button>
+        <button id="btn-delete">Delete</button>
+        <button id="btn-reset">Reset View</button>
+    </div>
+
+    <!-- IMAGE URL MODAL -->
+    <div class="modal" id="image-modal">
+        <div class="modal-content">
+            <h3>Add Image</h3>
+            <input type="text" id="image-url-input" placeholder="Enter image URL...">
+            <div class="modal-buttons">
+                <button class="btn-cancel" id="btn-modal-cancel">Cancel</button>
+                <button class="btn-confirm" id="btn-modal-confirm">Add</button>
             </div>
         </div>
     </div>
@@ -32,8 +42,3 @@
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
-
-
-
-
-
