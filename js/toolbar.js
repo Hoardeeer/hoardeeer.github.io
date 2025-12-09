@@ -2,33 +2,62 @@
  * Toolbar handles button clicks and toolbar interactions
  */
 export class Toolbar {
-    constructor(viewport) {
-        this.viewport = viewport;
-        this.init();
-    }
+            constructor(viewport, imageManager) {
+                this.viewport = viewport;
+                this.imageManager = imageManager;
+                this.init();
+            }
 
-    init() {
-        // Get buttons
-        const btnAdd = document.getElementById('btn-add');
-        const btnDelete = document.getElementById('btn-delete');
-        const btnReset = document.getElementById('btn-reset');
+            init() {
+                const btnAddImage = document.getElementById('btn-add-image');
+                const btnDelete = document.getElementById('btn-delete');
+                const btnReset = document.getElementById('btn-reset');
+                const modal = document.getElementById('image-modal');
+                const imageUrlInput = document.getElementById('image-url-input');
+                const btnModalCancel = document.getElementById('btn-modal-cancel');
+                const btnModalConfirm = document.getElementById('btn-modal-confirm');
 
-        // Add button - just shows alert for now
-        btnAdd.addEventListener('click', () => {
-            alert('Add button clicked!');
-        });
+                btnAddImage.addEventListener('click', () => {
+                    modal.classList.add('active');
+                    imageUrlInput.value = '';
+                    imageUrlInput.focus();
+                });
 
-        // Delete button - just shows alert for now
-        btnDelete.addEventListener('click', () => {
-            alert('Delete button clicked!');
-        });
+                btnModalCancel.addEventListener('click', () => {
+                    modal.classList.remove('active');
+                });
 
-        // Reset button - resets the view to center
-        btnReset.addEventListener('click', () => {
-            this.viewport.scale = 1;
-            this.viewport.pointX = window.innerWidth / 2;
-            this.viewport.pointY = window.innerHeight / 2;
-            this.viewport.setTransform();
-        });
-    }
-}
+                btnModalConfirm.addEventListener('click', () => {
+                    const url = imageUrlInput.value.trim();
+                    if (url) {
+                        const centerX = (window.innerWidth / 2 - this.viewport.pointX) / this.viewport.scale;
+                        const centerY = (window.innerHeight / 2 - this.viewport.pointY) / this.viewport.scale;
+                        this.imageManager.addImage(url, centerX - 100, centerY - 100);
+                        modal.classList.remove('active');
+                    }
+                });
+
+                imageUrlInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        btnModalConfirm.click();
+                    }
+                });
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+
+                btnDelete.addEventListener('click', () => {
+                    alert('Delete functionality coming soon!');
+                });
+
+                btnReset.addEventListener('click', () => {
+                    this.viewport.scale = 1;
+                    this.viewport.pointX = window.innerWidth / 2;
+                    this.viewport.pointY = window.innerHeight / 2;
+                    this.viewport.setTransform();
+                });
+            }
+        }
