@@ -9,7 +9,7 @@ export class Toolbar {
             }
 
             init() {
-                const btnAddImage = document.getElementById('btn-add-image');
+                const btnAddImage = document.getElementById('btn-add');
                 const btnDelete = document.getElementById('btn-delete');
                 const btnReset = document.getElementById('btn-reset');
                 const modal = document.getElementById('image-modal');
