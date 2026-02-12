@@ -652,7 +652,7 @@
                 // Today marker - only show label on first occurrence
                 const todayOffset = getDaysDifference(start, today);
                 if (todayOffset >= 0 && todayOffset < days.length) {
-                    const todayPosition = todayOffset * 60 + 30; // Center of the cell
+                    const todayPosition = todayOffset * 60 + 30 - 2; // Center of the cell minus 2px adjustment
                     if (!todayLabelShown) {
                         html += `<div class="today-marker" style="left: ${todayPosition}px;"></div>`;
                         todayLabelShown = true;
