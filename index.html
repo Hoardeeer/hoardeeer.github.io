@@ -365,6 +365,28 @@
         .button-group {
             display: flex;
         }
+        
+        .footer {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        
+        .footer-note {
+            flex: 1;
+            padding-right: 20px;
+        }
+        
+        .footer-version {
+            font-weight: 600;
+            white-space: nowrap;
+            color: #495057;
+        }
 
         @media (max-width: 768px) {
             .gantt-container {
@@ -402,6 +424,16 @@
             .btn-danger {
                 padding: 6px 10px;
                 font-size: 0.8em;
+            }
+            
+            .footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .footer-note {
+                padding-right: 0;
             }
         }
     </style>
@@ -450,6 +482,15 @@
             </div>
             <div class="gantt-wrapper">
                 <div id="ganttChart"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-note">
+                Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information.
+            </div>
+            <div class="footer-version">
+                v1.0.2
             </div>
         </div>
     </div>
