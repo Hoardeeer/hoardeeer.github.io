@@ -75,6 +75,20 @@
                 flex: 1;
             }
         }
+        
+        @media (max-width: 500px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-field:first-child {
+                grid-column: 1;
+            }
+            
+            .controls {
+                padding: 15px;
+            }
+        }
 
         .input-field {
             display: flex;
@@ -320,7 +334,7 @@
             bottom: 0;
             width: 2px;
             background: #dc3545;
-            z-index: 10;
+            z-index: 100;
             pointer-events: none;
         }
 
@@ -337,6 +351,10 @@
             font-size: 0.75em;
             font-weight: 600;
             white-space: nowrap;
+        }
+        
+        .today-marker-no-label::before {
+            content: none;
         }
 
         .button-group {
@@ -588,6 +606,9 @@
             });
             html += '</div>';
 
+            // Track if we've already shown the "Today" label
+            let todayLabelShown = false;
+
             // Tasks
             tasks.forEach(task => {
                 html += '<div class="task-row">';
@@ -623,11 +644,16 @@
                     </div>
                 `;
 
-                // Today marker
+                // Today marker - only show label on first occurrence
                 const todayOffset = getDaysDifference(start, today);
                 if (todayOffset >= 0 && todayOffset < days.length) {
                     const todayPosition = todayOffset * 60 + 30;
-                    html += `<div class="today-marker" style="left: ${todayPosition}px;"></div>`;
+                    if (!todayLabelShown) {
+                        html += `<div class="today-marker" style="left: ${todayPosition}px;"></div>`;
+                        todayLabelShown = true;
+                    } else {
+                        html += `<div class="today-marker today-marker-no-label" style="left: ${todayPosition}px;"></div>`;
+                    }
                 }
 
                 html += '</div>';
