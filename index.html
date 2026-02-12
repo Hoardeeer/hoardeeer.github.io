@@ -220,11 +220,12 @@
         .day-cell {
             text-align: center;
             font-size: 0.85em;
-            padding: 5px;
+            padding: 5px 0;
             border-right: 1px solid #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-sizing: border-box;
         }
         
         .day-cell:last-child {
@@ -276,6 +277,7 @@
 
         .timeline-grid-cell {
             border-right: 1px solid #f1f3f5;
+            box-sizing: border-box;
         }
         
         .timeline-grid-cell:last-child {
@@ -635,11 +637,11 @@
                 const startOffset = getDaysDifference(start, taskStart);
                 const duration = getDaysDifference(taskStart, taskEnd) + 1;
                 const leftPosition = startOffset * 60;
-                const width = duration * 60;
+                const width = duration * 60 - 4; // Subtract small margin for visual clarity
 
                 html += `
                     <div class="task-bar color-${task.color}" 
-                         style="left: ${leftPosition}px; width: ${width}px;">
+                         style="left: ${leftPosition + 2}px; width: ${width}px;">
                         ${task.name}
                     </div>
                 `;
@@ -647,7 +649,7 @@
                 // Today marker - only show label on first occurrence
                 const todayOffset = getDaysDifference(start, today);
                 if (todayOffset >= 0 && todayOffset < days.length) {
-                    const todayPosition = todayOffset * 60 + 30;
+                    const todayPosition = todayOffset * 60 + 30; // Center of the cell
                     if (!todayLabelShown) {
                         html += `<div class="today-marker" style="left: ${todayPosition}px;"></div>`;
                         todayLabelShown = true;
