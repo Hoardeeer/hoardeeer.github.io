@@ -1,1 +1,593 @@
-m
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gantt Chart App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .input-field input,
+        .input-field select {
+            padding: 10px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .gantt-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .gantt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gantt-header h2 {
+            color: #495057;
+        }
+
+        .gantt-chart {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 0;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .task-labels,
+        .task-bars {
+            display: contents;
+        }
+
+        .label-header,
+        .timeline-header {
+            background: #f8f9fa;
+            padding: 15px;
+            font-weight: 700;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .timeline-header {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 60px;
+            position: relative;
+        }
+
+        .day-cell {
+            text-align: center;
+            font-size: 0.85em;
+            padding: 5px;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .task-row {
+            display: contents;
+        }
+
+        .task-label {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            transition: background 0.2s;
+        }
+
+        .task-label:hover {
+            background: #f8f9fa;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 3px;
+        }
+
+        .task-dates {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .task-timeline {
+            border-bottom: 1px solid #e9ecef;
+            position: relative;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 60px;
+            min-height: 60px;
+            background: #fff;
+        }
+
+        .timeline-grid-cell {
+            border-right: 1px solid #f1f3f5;
+        }
+
+        .task-bar {
+            position: absolute;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .task-bar:hover {
+            transform: translateY(-50%) scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .color-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .color-green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .color-orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .color-purple { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .color-red { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .today-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dc3545;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .today-marker::before {
+            content: 'Today';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .button-group {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .gantt-chart {
+                grid-template-columns: 200px 1fr;
+            }
+
+            .timeline-header,
+            .task-timeline {
+                grid-auto-columns: 50px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Gantt Chart</h1>
+            <p>Plan and visualize your project timeline</p>
+        </div>
+
+        <div class="controls">
+            <div class="input-group">
+                <div class="input-field">
+                    <label for="taskName">Task Name</label>
+                    <input type="text" id="taskName" placeholder="Enter task name">
+                </div>
+                <div class="input-field">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="input-field">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="input-field">
+                    <label for="taskColor">Color</label>
+                    <select id="taskColor">
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="orange">Orange</option>
+                        <option value="purple">Purple</option>
+                        <option value="red">Red</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+                    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="gantt-container">
+            <div class="gantt-header">
+                <h2>Project Timeline</h2>
+            </div>
+            <div id="ganttChart"></div>
+        </div>
+    </div>
+
+    <script>
+        // Cookie helper functions
+        function setCookie(name, value, days = 365) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = name + "=" + encodeURIComponent(JSON.stringify(value)) + ";" + expires + ";path=/;SameSite=Lax";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) {
+                    try {
+                        return JSON.parse(decodeURIComponent(c.substring(nameEQ.length, c.length)));
+                    } catch (e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Load tasks from cookies or initialize empty array
+        let tasks = getCookie('ganttTasks') || [];
+
+        // Set default dates
+        function setDefaultDates() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 7);
+            
+            document.getElementById('startDate').valueAsDate = today;
+            document.getElementById('endDate').valueAsDate = tomorrow;
+        }
+
+        function addTask() {
+            const name = document.getElementById('taskName').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const color = document.getElementById('taskColor').value;
+
+            if (!name || !startDate || !endDate) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('End date must be after start date');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                name,
+                startDate,
+                endDate,
+                color
+            };
+
+            tasks.push(task);
+            saveTasks();
+            renderGanttChart();
+
+            // Clear inputs
+            document.getElementById('taskName').value = '';
+            setDefaultDates();
+        }
+
+        function deleteTask(id) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks = tasks.filter(task => task.id !== id);
+                saveTasks();
+                renderGanttChart();
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all tasks? This cannot be undone.')) {
+                tasks = [];
+                saveTasks();
+                renderGanttChart();
+            }
+        }
+
+        function saveTasks() {
+            setCookie('ganttTasks', tasks);
+        }
+
+        function getDateRange() {
+            if (tasks.length === 0) return { start: new Date(), end: new Date(), days: [] };
+
+            const dates = tasks.flatMap(task => [new Date(task.startDate), new Date(task.endDate)]);
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+
+            // Add padding
+            minDate.setDate(minDate.getDate() - 2);
+            maxDate.setDate(maxDate.getDate() + 2);
+
+            const days = [];
+            const current = new Date(minDate);
+            while (current <= maxDate) {
+                days.push(new Date(current));
+                current.setDate(current.getDate() + 1);
+            }
+
+            return { start: minDate, end: maxDate, days };
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${months[d.getMonth()]} ${d.getDate()}`;
+        }
+
+        function getDaysDifference(date1, date2) {
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            d1.setHours(0, 0, 0, 0);
+            d2.setHours(0, 0, 0, 0);
+            return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+        }
+
+        function renderGanttChart() {
+            const chartDiv = document.getElementById('ganttChart');
+
+            if (tasks.length === 0) {
+                chartDiv.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        <h3>No tasks yet</h3>
+                        <p>Add your first task to start planning your project</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const { start, days } = getDateRange();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let html = '<div class="gantt-chart">';
+            
+            // Header
+            html += '<div class="label-header">Tasks</div>';
+            html += '<div class="timeline-header">';
+            days.forEach(day => {
+                html += `<div class="day-cell">${formatDate(day)}</div>`;
+            });
+            html += '</div>';
+
+            // Tasks
+            tasks.forEach(task => {
+                html += '<div class="task-row">';
+                html += `
+                    <div class="task-label">
+                        <div class="task-info">
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-dates">${formatDate(task.startDate)} - ${formatDate(task.endDate)}</div>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                `;
+
+                html += '<div class="task-timeline">';
+                
+                // Grid cells
+                days.forEach(() => {
+                    html += '<div class="timeline-grid-cell"></div>';
+                });
+
+                // Task bar
+                const taskStart = new Date(task.startDate);
+                const taskEnd = new Date(task.endDate);
+                const startOffset = getDaysDifference(start, taskStart);
+                const duration = getDaysDifference(taskStart, taskEnd) + 1;
+                const leftPosition = startOffset * 60;
+                const width = duration * 60;
+
+                html += `
+                    <div class="task-bar color-${task.color}" 
+                         style="left: ${leftPosition}px; width: ${width}px;">
+                        ${task.name}
+                    </div>
+                `;
+
+                // Today marker
+                const todayOffset = getDaysDifference(start, today);
+                if (todayOffset >= 0 && todayOffset < days.length) {
+                    const todayPosition = todayOffset * 60 + 30;
+                    html += `<div class="today-marker" style="left: ${todayPosition}px;"></div>`;
+                }
+
+                html += '</div>';
+                html += '</div>';
+            });
+
+            html += '</div>';
+            chartDiv.innerHTML = html;
+        }
+
+        // Initialize
+        setDefaultDates();
+        renderGanttChart();
+
+        // Add keyboard support
+        document.getElementById('taskName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+    </script>
+</body>
+</html>
