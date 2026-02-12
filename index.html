@@ -56,6 +56,25 @@
             gap: 15px;
             margin-bottom: 15px;
         }
+        
+        @media (max-width: 900px) {
+            .input-group {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .input-field:first-child {
+                grid-column: 1 / -1;
+            }
+            
+            .button-group {
+                grid-column: 1 / -1;
+                justify-content: stretch;
+            }
+            
+            .button-group .btn {
+                flex: 1;
+            }
+        }
 
         .input-field {
             display: flex;
@@ -132,6 +151,13 @@
         .gantt-container {
             padding: 30px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .gantt-wrapper {
+            min-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .gantt-header {
@@ -153,6 +179,7 @@
             border-radius: 8px;
             overflow: hidden;
             background: white;
+            min-width: max-content;
         }
 
         .task-labels,
@@ -181,6 +208,13 @@
             font-size: 0.85em;
             padding: 5px;
             border-right: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .day-cell:last-child {
+            border-right: none;
         }
 
         .task-row {
@@ -228,6 +262,10 @@
 
         .timeline-grid-cell {
             border-right: 1px solid #f1f3f5;
+        }
+        
+        .timeline-grid-cell:last-child {
+            border-right: none;
         }
 
         .task-bar {
@@ -306,21 +344,41 @@
         }
 
         @media (max-width: 768px) {
-            .input-group {
-                grid-template-columns: 1fr;
+            .gantt-container {
+                padding: 15px;
             }
-
+            
             .gantt-chart {
-                grid-template-columns: 200px 1fr;
-            }
-
-            .timeline-header,
-            .task-timeline {
-                grid-auto-columns: 50px;
+                grid-template-columns: 180px 1fr;
             }
 
             .header h1 {
                 font-size: 1.8em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .controls {
+                padding: 20px 15px;
+            }
+            
+            .task-label {
+                padding: 12px;
+            }
+            
+            .task-name {
+                font-size: 0.9em;
+            }
+            
+            .task-dates {
+                font-size: 0.75em;
+            }
+            
+            .btn-danger {
+                padding: 6px 10px;
+                font-size: 0.8em;
             }
         }
     </style>
@@ -367,7 +425,9 @@
             <div class="gantt-header">
                 <h2>Project Timeline</h2>
             </div>
-            <div id="ganttChart"></div>
+            <div class="gantt-wrapper">
+                <div id="ganttChart"></div>
+            </div>
         </div>
     </div>
 
