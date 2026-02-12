@@ -211,13 +211,14 @@
         }
 
         .timeline-header {
-            display: flex;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 60px;
             position: relative;
         }
 
         .day-cell {
             width: 60px;
-            min-width: 60px;
             text-align: center;
             font-size: 0.85em;
             padding: 5px 0;
@@ -276,6 +277,7 @@
         }
 
         .timeline-grid-cell {
+            width: 60px;
             border-right: 1px solid #f1f3f5;
             box-sizing: border-box;
         }
