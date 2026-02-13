@@ -490,7 +490,7 @@
                 Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information.
             </div>
             <div class="footer-version">
-                v1.0.2
+                v1.1.0
             </div>
         </div>
     </div>
@@ -642,6 +642,11 @@
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
+            // Sort tasks by start date (earliest first)
+            const sortedTasks = [...tasks].sort((a, b) => {
+                return new Date(a.startDate) - new Date(b.startDate);
+            });
+
             let html = '<div class="gantt-chart">';
             
             // Header
@@ -655,8 +660,8 @@
             // Track if we've already shown the "Today" label
             let todayLabelShown = false;
 
-            // Tasks
-            tasks.forEach(task => {
+            // Tasks (now sorted)
+            sortedTasks.forEach(task => {
                 html += '<div class="task-row">';
                 html += `
                     <div class="task-label">
