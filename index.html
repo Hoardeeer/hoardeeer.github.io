@@ -518,6 +518,37 @@
             color: #6c757d;
         }
 
+        .task-countdown {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .countdown-upcoming {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+
+        .countdown-today {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+        }
+
+        .countdown-overdue {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
+        .countdown-active {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
         .task-timeline {
             border-bottom: 1px solid #e9ecef;
             position: relative;
@@ -773,7 +804,7 @@
                 Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information. Use <strong>Export</strong> to back up or transfer your data.
             </div>
             <div class="footer-version">
-                v1.2.0
+                v1.3.0
             </div>
         </div>
     </div>
@@ -1070,11 +1101,20 @@
 
             sortedTasks.forEach(task => {
                 html += '<div class="task-row">';
+                
+                const countdown = getTaskCountdown(task);
+                const countdownHTML = countdown 
+                    ? `<span class="task-countdown ${countdown.className}">${countdown.text}</span>` 
+                    : '';
+                
                 html += `
                     <div class="task-label">
                         <div class="task-info">
                             <div class="task-name">${escapeHtml(task.name)}</div>
-                            <div class="task-dates">${formatDate(task.startDate)} – ${formatDate(task.endDate)}</div>
+                            <div class="task-dates">
+                                ${formatDate(task.startDate)} – ${formatDate(task.endDate)}
+                                ${countdownHTML}
+                            </div>
                         </div>
                         <button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button>
                     </div>`;
@@ -1118,6 +1158,59 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        function getTaskCountdown(task) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const taskStart = new Date(task.startDate);
+            taskStart.setHours(0, 0, 0, 0);
+            
+            const taskEnd = new Date(task.endDate);
+            taskEnd.setHours(0, 0, 0, 0);
+            
+            const daysUntilStart = getDaysDifference(today, taskStart);
+            const daysUntilEnd = getDaysDifference(today, taskEnd);
+            
+            // Task hasn't started yet
+            if (daysUntilStart > 0) {
+                const dayText = daysUntilStart === 1 ? 'day' : 'days';
+                return {
+                    text: `Starts in ${daysUntilStart} ${dayText}`,
+                    className: 'countdown-upcoming'
+                };
+            }
+            
+            // Task starts today
+            if (daysUntilStart === 0) {
+                return {
+                    text: 'Starts today',
+                    className: 'countdown-today'
+                };
+            }
+            
+            // Task is active (started but not ended)
+            if (daysUntilStart < 0 && daysUntilEnd >= 0) {
+                const daysRemaining = daysUntilEnd + 1;
+                const dayText = daysRemaining === 1 ? 'day' : 'days';
+                return {
+                    text: `${daysRemaining} ${dayText} left`,
+                    className: 'countdown-active'
+                };
+            }
+            
+            // Task is overdue (ended)
+            if (daysUntilEnd < 0) {
+                const daysOverdue = Math.abs(daysUntilEnd);
+                const dayText = daysOverdue === 1 ? 'day' : 'days';
+                return {
+                    text: `Ended ${daysOverdue} ${dayText} ago`,
+                    className: 'countdown-overdue'
+                };
+            }
+            
+            return null;
         }
 
         // ── Init ────────────────────────────────────────────────────────────
