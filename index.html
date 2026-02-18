@@ -2031,19 +2031,16 @@
             setGistStatus('syncing', 'Pulling…');
             try {
                 const remote = await gistPull(creds);
-                // Merge strategy: if remote is newer, use it; else keep local
-                const remoteTs = remote.updatedAt ? new Date(remote.updatedAt).getTime() : 0;
-                const localTs  = getCookie('ganttLastPush') || 0;
-                if (remoteTs > localTs && remote.tasks.length > 0) {
-                    tasks = remote.tasks;
-                    setCookie('ganttTasks', tasks);
-                    renderGanttChart();
-                }
+                // Overwrite local with remote — Gist is the source of truth
+                tasks = remote.tasks;
+                setCookie('ganttTasks', tasks);
+                renderGanttChart();
                 const ts = new Date().toLocaleTimeString();
                 setGistStatus('ok', 'Synced');
                 updateGistLastSync(ts);
                 setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
             } catch (e) {
+                // On any error: keep whatever is already in cookies/tasks — do not wipe
                 setGistStatus('error', 'Pull failed');
                 showToast(`⚠️ Gist pull failed: ${e.message}`, 'error');
                 console.error('Gist pull error:', e);
@@ -2103,16 +2100,13 @@
                     gistId = await gistCreate(token);
                     showToast(`✅ New Gist created! ID: ${gistId}`, 'success');
                 } else {
-                    // Validate the existing gist and pull
+                    // Validate the existing gist and pull — overwrite local with remote
                     setGistStatus('syncing', 'Connecting…');
                     const remote = await gistPull({ token, id: gistId });
-                    // Merge: keep local tasks + remote tasks (deduplicate by id)
-                    const existingIds = new Set(tasks.map(t => String(t.id)));
-                    const incoming    = remote.tasks.filter(t => !existingIds.has(String(t.id)));
-                    tasks = [...tasks, ...incoming];
+                    tasks = remote.tasks;
                     setCookie('ganttTasks', tasks);
                     renderGanttChart();
-                    showToast(`✅ Linked to Gist! Merged ${incoming.length} remote task(s).`, 'success');
+                    showToast(`✅ Linked to Gist! Loaded ${tasks.length} task(s) from Gist.`, 'success');
                 }
 
                 saveGistCreds(token, gistId);
@@ -2142,18 +2136,18 @@
             try {
                 setGistStatus('syncing', 'Pulling…');
                 const remote = await gistPull(creds);
-                const existingIds = new Set(tasks.map(t => String(t.id)));
-                const incoming    = remote.tasks.filter(t => !existingIds.has(String(t.id)));
-                tasks = [...tasks, ...incoming];
+                // Overwrite local with remote — Gist is the source of truth
+                tasks = remote.tasks;
                 setCookie('ganttTasks', tasks);
                 renderGanttChart();
                 const ts = new Date().toLocaleTimeString();
                 setGistStatus('ok', 'Synced');
                 updateGistLastSync(ts);
                 setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
-                showToast(`✅ Pulled from Gist. ${incoming.length} new task(s) merged.`, 'success');
+                showToast(`✅ Pulled from Gist. ${tasks.length} task(s) loaded.`, 'success');
                 closeGistModal();
             } catch (e) {
+                // On error: keep existing local tasks intact — do not wipe
                 setGistStatus('error', 'Pull failed');
                 showToast(`❌ Pull failed: ${e.message}`, 'error');
             }
