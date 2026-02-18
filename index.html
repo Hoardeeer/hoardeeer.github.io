@@ -5,6 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gantt Chart App</title>
     <style>
+        /* ── CSS Variables ── */
+        :root {
+            --bg-page:             linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-container:        #ffffff;
+            --bg-controls:         #f8f9fa;
+            --bg-syncbar:          #ffffff;
+            --bg-label-header:     #f8f9fa;
+            --bg-task-label:       #ffffff;
+            --bg-task-label-hover: #f8f9fa;
+            --bg-task-timeline:    #ffffff;
+            --bg-gantt-chart:      #ffffff;
+            --bg-footer:           #f8f9fa;
+            --bg-modal:            #ffffff;
+            --bg-mode-btn:         #ffffff;
+            --bg-import-btn:       #ffffff;
+            --bg-copy-btn:         #ffffff;
+            --bg-modal-cancel:     #ffffff;
+            --border-main:         #dee2e6;
+            --border-controls:     #e9ecef;
+            --border-gantt:        #dee2e6;
+            --border-task:         #e9ecef;
+            --border-grid-cell:    #f1f3f5;
+            --border-sync:         #e9ecef;
+            --border-divider:      #dee2e6;
+            --text-primary:        #212529;
+            --text-secondary:      #495057;
+            --text-muted:          #6c757d;
+            --text-hint:           #adb5bd;
+            --input-bg:            #ffffff;
+            --input-text:          #212529;
+            --shadow-container:    0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        html.dark {
+            --bg-page:             linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-container:        #1e1e2e;
+            --bg-controls:         #181825;
+            --bg-syncbar:          #1e1e2e;
+            --bg-label-header:     #181825;
+            --bg-task-label:       #1e1e2e;
+            --bg-task-label-hover: #2a2a3e;
+            --bg-task-timeline:    #1e1e2e;
+            --bg-gantt-chart:      #1e1e2e;
+            --bg-footer:           #181825;
+            --bg-modal:            #1e1e2e;
+            --bg-mode-btn:         #2a2a3e;
+            --bg-import-btn:       #1e1e2e;
+            --bg-copy-btn:         #2a2a3e;
+            --bg-modal-cancel:     #2a2a3e;
+            --border-main:         #3a3a5c;
+            --border-controls:     #2a2a3e;
+            --border-gantt:        #3a3a5c;
+            --border-task:         #2a2a3e;
+            --border-grid-cell:    #252540;
+            --border-sync:         #2a2a3e;
+            --border-divider:      #3a3a5c;
+            --text-primary:        #e0e0f0;
+            --text-secondary:      #b0b0cc;
+            --text-muted:          #8888aa;
+            --text-hint:           #555577;
+            --input-bg:            #2a2a3e;
+            --input-text:          #e0e0f0;
+            --shadow-container:    0 20px 60px rgba(0,0,0,0.7);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,18 +78,20 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-page);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
+            background: var(--bg-container);
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-container);
             overflow: hidden;
+            transition: background 0.3s, box-shadow 0.3s;
         }
 
         .header {
@@ -32,6 +99,38 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .dark-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 700;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.25s;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+
+        .dark-toggle:hover {
+            background: rgba(255,255,255,0.28);
+            border-color: rgba(255,255,255,0.6);
+            transform: translateY(-1px);
+        }
+
+        .dark-toggle-icon {
+            font-size: 1.1em;
+            line-height: 1;
         }
 
         .header h1 {
@@ -46,8 +145,9 @@
 
         .controls {
             padding: 25px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
+            background: var(--bg-controls);
+            border-bottom: 2px solid var(--border-controls);
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .input-group {
@@ -98,17 +198,19 @@
         .input-field label {
             font-size: 0.85em;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-secondary);
             margin-bottom: 5px;
         }
 
         .input-field input,
         .input-field select {
             padding: 10px 12px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-main);
             border-radius: 6px;
             font-size: 1em;
             transition: all 0.3s;
+            background: var(--input-bg);
+            color: var(--input-text);
         }
 
         .input-field input:focus,
@@ -183,18 +285,19 @@
         /* ── Sync Bar ── */
         .sync-bar {
             padding: 14px 30px;
-            background: #fff;
-            border-bottom: 2px solid #e9ecef;
+            background: var(--bg-syncbar);
+            border-bottom: 2px solid var(--border-sync);
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .sync-bar-label {
             font-size: 0.85em;
             font-weight: 700;
-            color: #495057;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             white-space: nowrap;
@@ -204,8 +307,9 @@
         .sync-divider {
             width: 1px;
             height: 28px;
-            background: #dee2e6;
+            background: var(--border-divider);
             margin: 0 4px;
+            transition: background 0.3s;
         }
 
         .btn-sync {
@@ -233,7 +337,7 @@
         }
 
         .btn-import {
-            background: white;
+            background: var(--bg-import-btn);
             color: #667eea;
             border-color: #667eea;
         }
@@ -246,21 +350,21 @@
         }
 
         .btn-copy-clip {
-            background: white;
-            color: #495057;
-            border-color: #dee2e6;
+            background: var(--bg-copy-btn);
+            color: var(--text-secondary);
+            border-color: var(--border-main);
         }
 
         .btn-copy-clip:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
+            background: var(--bg-controls);
+            border-color: var(--text-muted);
             transform: translateY(-2px);
         }
 
         .sync-hint {
             margin-left: auto;
             font-size: 0.78em;
-            color: #adb5bd;
+            color: var(--text-hint);
             font-style: italic;
         }
 
@@ -309,13 +413,14 @@
         }
 
         .modal {
-            background: white;
+            background: var(--bg-modal);
             border-radius: 12px;
             padding: 30px;
             width: 100%;
             max-width: 560px;
             box-shadow: 0 24px 60px rgba(0,0,0,0.3);
             animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: background 0.3s;
         }
 
         @keyframes modalIn {
@@ -325,7 +430,7 @@
 
         .modal h3 {
             font-size: 1.3em;
-            color: #212529;
+            color: var(--text-primary);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -334,7 +439,7 @@
 
         .modal-desc {
             font-size: 0.9em;
-            color: #6c757d;
+            color: var(--text-muted);
             margin-bottom: 18px;
             line-height: 1.5;
         }
@@ -343,13 +448,14 @@
             width: 100%;
             height: 180px;
             padding: 12px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-main);
             border-radius: 6px;
             font-family: 'Courier New', monospace;
             font-size: 0.82em;
             resize: vertical;
             transition: border-color 0.3s;
-            color: #212529;
+            color: var(--input-text);
+            background: var(--input-bg);
         }
 
         .modal textarea:focus {
@@ -368,14 +474,14 @@
         .mode-btn {
             flex: 1;
             padding: 9px 14px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-main);
             border-radius: 6px;
-            background: white;
+            background: var(--bg-mode-btn);
             font-size: 0.88em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            color: #495057;
+            color: var(--text-secondary);
             text-align: center;
         }
 
@@ -386,8 +492,8 @@
         }
 
         .mode-btn:hover:not(.active) {
-            border-color: #adb5bd;
-            background: #f8f9fa;
+            border-color: var(--text-muted);
+            background: var(--bg-controls);
         }
 
         .modal-actions {
@@ -399,18 +505,18 @@
 
         .btn-modal-cancel {
             padding: 10px 20px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-main);
             border-radius: 6px;
-            background: white;
+            background: var(--bg-modal-cancel);
             font-size: 0.95em;
             font-weight: 600;
             cursor: pointer;
-            color: #6c757d;
+            color: var(--text-muted);
             transition: all 0.2s;
         }
 
         .btn-modal-cancel:hover {
-            background: #f8f9fa;
+            background: var(--bg-controls);
         }
 
         .btn-modal-confirm {
@@ -439,7 +545,7 @@
             display: block;
             font-size: 0.85em;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-secondary);
             margin-bottom: 6px;
         }
 
@@ -447,10 +553,12 @@
         .modal-edit-field select {
             width: 100%;
             padding: 10px 12px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-main);
             border-radius: 6px;
             font-size: 1em;
             transition: all 0.3s;
+            background: var(--input-bg);
+            color: var(--input-text);
         }
 
         .modal-edit-field input:focus,
@@ -481,18 +589,19 @@
         }
 
         .gantt-header h2 {
-            color: #495057;
+            color: var(--text-secondary);
         }
 
         .gantt-chart {
             display: grid;
             grid-template-columns: 313px 1fr;
             gap: 0;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-gantt);
             border-radius: 8px;
             overflow: hidden;
-            background: white;
+            background: var(--bg-gantt-chart);
             min-width: max-content;
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .task-labels,
@@ -502,11 +611,12 @@
 
         .label-header,
         .timeline-header {
-            background: #f8f9fa;
+            background: var(--bg-label-header);
             padding: 15px;
             font-weight: 700;
-            color: #495057;
-            border-bottom: 2px solid #dee2e6;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-gantt);
+            transition: background 0.3s, border-color 0.3s;
         }
 
         .timeline-header {
@@ -522,11 +632,12 @@
             text-align: center;
             font-size: 0.85em;
             padding: 5px 0;
-            border-right: 1px solid #e9ecef;
+            border-right: 1px solid var(--border-controls);
             display: flex;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
+            color: var(--text-secondary);
         }
         
         .day-cell:last-child {
@@ -539,27 +650,27 @@
 
         .task-label {
             padding: 15px;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-task);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #fff;
+            background: var(--bg-task-label);
             transition: background 0.2s;
         }
 
         .task-label:hover {
-            background: #f8f9fa;
+            background: var(--bg-task-label-hover);
         }
 
         .task-info {
             flex: 1;
-            min-width: 0; /* allow flex child to shrink below content size */
+            min-width: 0;
             overflow: hidden;
         }
 
         .task-name {
             font-weight: 600;
-            color: #212529;
+            color: var(--text-primary);
             margin-bottom: 3px;
             overflow-wrap: break-word;
             word-break: break-word;
@@ -571,7 +682,7 @@
 
         .task-dates {
             font-size: 0.8em;
-            color: #6c757d;
+            color: var(--text-muted);
             overflow-wrap: break-word;
             word-break: break-word;
         }
@@ -608,18 +719,19 @@
         }
 
         .task-timeline {
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--border-task);
             position: relative;
             display: grid;
             grid-auto-flow: column;
             grid-auto-columns: 60px;
             min-height: 60px;
-            background: #fff;
+            background: var(--bg-task-timeline);
+            transition: background 0.3s;
         }
 
         .timeline-grid-cell {
             width: 60px;
-            border-right: 1px solid #f1f3f5;
+            border-right: 1px solid var(--border-grid-cell);
             box-sizing: border-box;
         }
         
@@ -658,7 +770,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #6c757d;
+            color: var(--text-muted);
         }
 
         .empty-state svg {
@@ -708,13 +820,14 @@
         
         .footer {
             padding: 20px 30px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
+            background: var(--bg-footer);
+            border-top: 1px solid var(--border-task);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.8em;
-            color: #6c757d;
+            color: var(--text-muted);
+            transition: background 0.3s, border-color 0.3s;
         }
         
         .footer-note {
@@ -725,10 +838,34 @@
         .footer-version {
             font-weight: 600;
             white-space: nowrap;
-            color: #495057;
+            color: var(--text-secondary);
         }
 
-        @media (max-width: 768px) {
+        .modal-file-label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .modal-import-hint {
+            font-size: 0.82em;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 480px) {
+            .dark-toggle {
+                top: 12px;
+                right: 12px;
+                padding: 6px 12px;
+                font-size: 0.78em;
+            }
+        }
             .gantt-container {
                 padding: 15px;
             }
@@ -799,6 +936,10 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">
+                <span class="dark-toggle-icon" id="darkToggleIcon">🌙</span>
+                <span id="darkToggleLabel">Dark Mode</span>
+            </button>
             <h1>📊 Gantt Chart</h1>
             <p>Plan and visualize your project timeline</p>
         </div>
@@ -871,7 +1012,7 @@
                 Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information. Use <strong>Export</strong> to back up or transfer your data.
             </div>
             <div class="footer-version">
-                v1.4.3
+                v1.5.0
             </div>
         </div>
     </div>
@@ -890,7 +1031,7 @@
             <textarea id="importTextarea" placeholder='Paste exported JSON here…&#10;&#10;e.g. [{"id":1234,"name":"Design","startDate":"2025-01-01","endDate":"2025-01-10","color":"blue"}]'></textarea>
 
             <div style="margin-top: 10px;">
-                <label for="importFileInput" style="font-size:0.85em; font-weight:600; color:#495057; cursor:pointer;">
+                <label for="importFileInput" class="modal-file-label">
                     📂 Or browse for a file:
                 </label>
                 <input type="file" id="importFileInput" accept=".json,application/json"
@@ -898,7 +1039,7 @@
                        onchange="loadImportFile(event)">
             </div>
 
-            <p style="font-size:0.82em; font-weight:700; color:#495057; margin-top:16px; margin-bottom:6px;">How to handle existing tasks:</p>
+            <p class="modal-import-hint">How to handle existing tasks:</p>
             <div class="modal-import-mode">
                 <button class="mode-btn active" id="modeMerge"  onclick="setImportMode('merge')">Merge (keep both)</button>
                 <button class="mode-btn"         id="modeReplace" onclick="setImportMode('replace')">Replace (overwrite all)</button>
@@ -983,6 +1124,30 @@
         let tasks = getCookie('ganttTasks') || [];
         let importMode = 'merge'; // 'merge' | 'replace'
         let editingTaskId = null; // Track which task is being edited
+
+        // ── Dark Mode ───────────────────────────────────────────────────────
+        function applyDark(isDark) {
+            document.documentElement.classList.toggle('dark', isDark);
+            const icon  = document.getElementById('darkToggleIcon');
+            const label = document.getElementById('darkToggleLabel');
+            if (isDark) {
+                icon.textContent  = '☀️';
+                label.textContent = 'Light Mode';
+            } else {
+                icon.textContent  = '🌙';
+                label.textContent = 'Dark Mode';
+            }
+        }
+
+        function toggleDark() {
+            const isDark = !document.documentElement.classList.contains('dark');
+            applyDark(isDark);
+            setCookie('ganttDark', isDark);
+        }
+
+        // Apply persisted preference on load
+        const savedDark = getCookie('ganttDark');
+        if (savedDark === true) applyDark(true);
 
         // ── Default dates ───────────────────────────────────────────────────
         function setDefaultDates() {
