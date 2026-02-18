@@ -538,7 +538,154 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        /* ── Gantt ── */
+        /* ── Gist Sync ── */
+        .btn-gist {
+            background: var(--bg-copy-btn);
+            color: var(--text-secondary);
+            border-color: var(--border-main);
+            position: relative;
+        }
+
+        .btn-gist:hover {
+            background: var(--bg-controls);
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+
+        .btn-gist.gist-connected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-gist.gist-connected:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .sync-status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .dot-idle    { background: var(--text-hint); }
+        .dot-syncing { background: #f0ad4e; animation: pulse 1s infinite; }
+        .dot-ok      { background: #28a745; }
+        .dot-error   { background: #dc3545; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* Gist modal extras */
+        .gist-status-panel {
+            background: var(--bg-controls);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            font-size: 0.88em;
+            color: var(--text-secondary);
+        }
+
+        .gist-status-panel .gist-id-link {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .gist-status-panel .gist-id-link:hover { text-decoration: underline; }
+
+        .gist-status-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .gist-status-row:last-child { margin-bottom: 0; }
+
+        .gist-danger-zone {
+            border-top: 1px solid var(--border-main);
+            margin-top: 18px;
+            padding-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-gist-disconnect {
+            flex: 1;
+            padding: 9px 14px;
+            border: 2px solid var(--border-main);
+            border-radius: 6px;
+            background: var(--bg-modal-cancel);
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-gist-disconnect:hover {
+            border-color: #6c757d;
+            color: var(--text-primary);
+            background: var(--bg-controls);
+        }
+
+        .btn-gist-delete {
+            flex: 1;
+            padding: 9px 14px;
+            border: 2px solid #dc354544;
+            border-radius: 6px;
+            background: transparent;
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #dc3545;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-gist-delete:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .gist-field-hint {
+            font-size: 0.78em;
+            color: var(--text-hint);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .gist-setup-section { display: block; }
+        .gist-connected-section { display: none; }
+        .gist-modal-connected .gist-setup-section { display: none; }
+        .gist-modal-connected .gist-connected-section { display: block; }
+
+        .sync-bar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gist-last-sync {
+            font-size: 0.78em;
+            color: var(--text-hint);
+            font-style: italic;
+        }
         .gantt-container {
             padding: 30px;
             overflow-x: auto;
@@ -1078,7 +1225,20 @@
                 Copy to Clipboard
             </button>
 
-            <span class="sync-hint">Export on one device → Import on another to sync your tasks</span>
+            <div class="sync-divider"></div>
+
+            <button class="btn-sync btn-gist" id="btnGist" onclick="openGistModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+                <span id="gistBtnLabel">GitHub Gist Sync</span>
+            </button>
+
+            <div class="sync-bar-right">
+                <span id="gistSyncStatus" style="display:none; font-size:0.8em; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:4px;">
+                    <span class="sync-status-dot dot-idle" id="gistDot"></span>
+                    <span id="gistStatusText">Idle</span>
+                </span>
+                <span class="gist-last-sync" id="gistLastSync"></span>
+            </div>
         </div>
 
         <div class="gantt-container">
@@ -1095,7 +1255,7 @@
                 Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information. Use <strong>Export</strong> to back up or transfer your data.
             </div>
             <div class="footer-version">
-                v1.5.8
+                v1.6.0
             </div>
         </div>
     </div>
@@ -1175,6 +1335,79 @@
             <div class="modal-actions">
                 <button class="btn-modal-cancel"  onclick="closeEditModal()">Cancel</button>
                 <button class="btn-modal-confirm" onclick="confirmEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── GitHub Gist Sync Modal ── -->
+    <div class="modal-backdrop" id="gistModal" onclick="handleGistBackdropClick(event)">
+        <div class="modal" id="gistModalInner">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+                GitHub Gist Sync
+            </h3>
+
+            <!-- ── Connected view ── -->
+            <div class="gist-connected-section">
+                <div class="gist-status-panel">
+                    <div class="gist-status-row">
+                        <span class="sync-status-dot" id="modalDot" style="width:9px;height:9px;"></span>
+                        <strong id="modalStatusText">Connected</strong>
+                    </div>
+                    <div class="gist-status-row" style="margin-top:6px;">
+                        <span style="color:var(--text-muted); font-size:0.88em;">Gist:</span>
+                        <a id="modalGistLink" class="gist-id-link" href="#" target="_blank" rel="noopener"></a>
+                    </div>
+                    <div class="gist-status-row">
+                        <span style="color:var(--text-muted); font-size:0.88em;">Last sync:</span>
+                        <span id="modalLastSync" style="font-size:0.88em; color:var(--text-secondary);">—</span>
+                    </div>
+                </div>
+
+                <p class="modal-desc">Your tasks are automatically synced to your GitHub Gist. Changes are pushed after a short delay to batch rapid edits.</p>
+
+                <button class="btn-modal-confirm" style="width:100%;" onclick="gistPullNow()">
+                    ↓ Pull latest from Gist now
+                </button>
+
+                <div class="gist-danger-zone">
+                    <button class="btn-gist-disconnect" onclick="gistDisconnect()">
+                        Disconnect Gist
+                    </button>
+                    <button class="btn-gist-delete" onclick="gistDeleteAndDisconnect()">
+                        Delete Gist &amp; Disconnect
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Setup view ── -->
+            <div class="gist-setup-section">
+                <p class="modal-desc">
+                    Sync your tasks across devices via a private GitHub Gist. Your token is stored only in this browser's cookies and never sent anywhere except the GitHub API.
+                </p>
+
+                <div class="modal-edit-field">
+                    <label for="gistToken">GitHub Personal Access Token</label>
+                    <input type="password" id="gistToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                    <p class="gist-field-hint">
+                        Needs the <strong>gist</strong> scope only. Create one at
+                        <a href="https://github.com/settings/tokens/new?scopes=gist&description=Gantt+Chart+Sync" target="_blank" rel="noopener" style="color:#667eea;">github.com/settings/tokens</a>.<br>
+                        Your token is stored in a cookie in this browser and is never sent anywhere except <code>api.github.com</code>.
+                    </p>
+                </div>
+
+                <div class="modal-edit-field">
+                    <label for="gistId">Gist ID <span style="font-weight:400; color:var(--text-muted);">(optional — leave blank to create a new one)</span></label>
+                    <input type="text" id="gistId" placeholder="e.g. a1b2c3d4e5f6..." autocomplete="off">
+                    <p class="gist-field-hint">
+                        If you already have a Gantt Gist from another device, paste its ID here to link to it instead of creating a new one. Find it in the URL: <code>gist.github.com/&lt;user&gt;/<strong>ID</strong></code>
+                    </p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-modal-cancel" onclick="closeGistModal()">Cancel</button>
+                    <button class="btn-modal-confirm" onclick="gistConnect()">Connect &amp; Sync</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1636,9 +1869,333 @@
             return null;
         }
 
-        // ── Init ────────────────────────────────────────────────────────────
+        // ── GitHub Gist Sync ────────────────────────────────────────────────
+        //
+        // Storage keys:
+        //   ganttGistToken  — btoa-obfuscated PAT (gist scope)
+        //   ganttGistId     — the Gist ID
+        //
+        // Strategy:
+        //   • On load: if credentials exist → pull from Gist (merge newer wins)
+        //   • On saveTasks(): debounced 2s → push to Gist
+        //   • Rate: ~1 write per 2s burst maximum; typical use << 30/hr
+        // ────────────────────────────────────────────────────────────────────
+
+        const GIST_FILENAME = 'gantt-tasks.json';
+
+        // Obfuscate token — not encryption, just avoids plain-text in cookies
+        const _enc = v => btoa(unescape(encodeURIComponent(v)));
+        const _dec = v => { try { return decodeURIComponent(escape(atob(v))); } catch { return null; } };
+
+        function getGistCreds() {
+            const raw = getCookie('ganttGistToken');
+            const id  = getCookie('ganttGistId');
+            if (!raw || !id) return null;
+            const token = _dec(raw);
+            if (!token) return null;
+            return { token, id };
+        }
+
+        function saveGistCreds(token, id) {
+            setCookie('ganttGistToken', _enc(token));
+            setCookie('ganttGistId', id);
+        }
+
+        function clearGistCreds() {
+            setCookie('ganttGistToken', '', -1);
+            setCookie('ganttGistId', '', -1);
+        }
+
+        // ── Status UI ──
+        function setGistStatus(state, text) {
+            // states: 'idle' | 'syncing' | 'ok' | 'error'
+            const dot        = document.getElementById('gistDot');
+            const statusText = document.getElementById('gistStatusText');
+            const modalDot   = document.getElementById('modalDot');
+            const modalText  = document.getElementById('modalStatusText');
+            const classes    = { idle:'dot-idle', syncing:'dot-syncing', ok:'dot-ok', error:'dot-error' };
+
+            if (dot) { dot.className = `sync-status-dot ${classes[state] || 'dot-idle'}`; }
+            if (statusText) statusText.textContent = text;
+            if (modalDot) { modalDot.className = `sync-status-dot ${classes[state] || 'dot-idle'}`; }
+            if (modalText) modalText.textContent = text;
+        }
+
+        function updateGistLastSync(dateStr) {
+            const el  = document.getElementById('gistLastSync');
+            const mel = document.getElementById('modalLastSync');
+            if (el)  el.textContent  = dateStr ? `Last sync: ${dateStr}` : '';
+            if (mel) mel.textContent = dateStr || '—';
+        }
+
+        function updateGistButton() {
+            const btn   = document.getElementById('btnGist');
+            const label = document.getElementById('gistBtnLabel');
+            const creds = getGistCreds();
+            const statusEl = document.getElementById('gistSyncStatus');
+            if (creds) {
+                btn.classList.add('gist-connected');
+                label.textContent = 'Gist Sync: ON';
+                if (statusEl) statusEl.style.display = 'flex';
+            } else {
+                btn.classList.remove('gist-connected');
+                label.textContent = 'GitHub Gist Sync';
+                if (statusEl) statusEl.style.display = 'none';
+            }
+        }
+
+        // ── GitHub API helpers ──
+        async function gistRequest(method, path, body, token) {
+            const headers = {
+                'Accept':        'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+            };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            if (body)  headers['Content-Type']  = 'application/json';
+            const res = await fetch(`https://api.github.com${path}`, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : undefined,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || `HTTP ${res.status}`);
+            }
+            return res.status === 204 ? null : res.json();
+        }
+
+        // ── Pull from Gist ──
+        async function gistPull(creds) {
+            setGistStatus('syncing', 'Pulling…');
+            const data = await gistRequest('GET', `/gists/${creds.id}`, null, creds.token);
+            const file = data.files && data.files[GIST_FILENAME];
+            if (!file) throw new Error('Gist file not found — wrong Gist ID?');
+            const raw = file.content || await (await fetch(file.raw_url)).text();
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed.tasks)) throw new Error('Invalid Gist data format');
+            return parsed; // { tasks, updatedAt }
+        }
+
+        // ── Push to Gist ──
+        async function gistPush(creds) {
+            setGistStatus('syncing', 'Pushing…');
+            const payload = { tasks, updatedAt: new Date().toISOString() };
+            await gistRequest('PATCH', `/gists/${creds.id}`, {
+                files: { [GIST_FILENAME]: { content: JSON.stringify(payload, null, 2) } }
+            }, creds.token);
+        }
+
+        // ── Create new Gist ──
+        async function gistCreate(token) {
+            setGistStatus('syncing', 'Creating Gist…');
+            const payload = { tasks, updatedAt: new Date().toISOString() };
+            const data = await gistRequest('POST', '/gists', {
+                description: 'Gantt Chart Tasks — auto-synced',
+                public: false,
+                files: { [GIST_FILENAME]: { content: JSON.stringify(payload, null, 2) } }
+            }, token);
+            return data.id;
+        }
+
+        // ── Debounced push ──
+        let _gistPushTimer = null;
+        function schedulePush() {
+            const creds = getGistCreds();
+            if (!creds) return;
+            clearTimeout(_gistPushTimer);
+            _gistPushTimer = setTimeout(async () => {
+                try {
+                    await gistPush(creds);
+                    const ts = new Date().toLocaleTimeString();
+                    setGistStatus('ok', 'Synced');
+                    updateGistLastSync(ts);
+                    setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
+                } catch (e) {
+                    setGistStatus('error', 'Push failed');
+                    console.error('Gist push error:', e);
+                }
+            }, 2000);
+        }
+
+        // ── Override saveTasks to also schedule a push ──
+        function saveTasks() {
+            setCookie('ganttTasks', tasks);
+            schedulePush();
+        }
+
+        // ── On-load pull ──
+        async function gistInitialPull() {
+            const creds = getGistCreds();
+            if (!creds) return;
+            updateGistButton();
+            setGistStatus('syncing', 'Pulling…');
+            try {
+                const remote = await gistPull(creds);
+                // Merge strategy: if remote is newer, use it; else keep local
+                const remoteTs = remote.updatedAt ? new Date(remote.updatedAt).getTime() : 0;
+                const localTs  = getCookie('ganttLastPush') || 0;
+                if (remoteTs > localTs && remote.tasks.length > 0) {
+                    tasks = remote.tasks;
+                    setCookie('ganttTasks', tasks);
+                    renderGanttChart();
+                }
+                const ts = new Date().toLocaleTimeString();
+                setGistStatus('ok', 'Synced');
+                updateGistLastSync(ts);
+                setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
+            } catch (e) {
+                setGistStatus('error', 'Pull failed');
+                showToast(`⚠️ Gist pull failed: ${e.message}`, 'error');
+                console.error('Gist pull error:', e);
+            }
+        }
+
+        // ── Modal open/close ──
+        function openGistModal() {
+            const creds = getGistCreds();
+            const inner = document.getElementById('gistModalInner');
+            if (creds) {
+                inner.classList.add('gist-modal-connected');
+                const link = document.getElementById('modalGistLink');
+                link.href        = `https://gist.github.com/${creds.id}`;
+                link.textContent = creds.id;
+                // refresh status dots
+                const dot = document.getElementById('gistDot');
+                const mDot = document.getElementById('modalDot');
+                if (dot && mDot) mDot.className = dot.className;
+                const mText = document.getElementById('modalStatusText');
+                const sText = document.getElementById('gistStatusText');
+                if (mText && sText) mText.textContent = sText.textContent;
+                const ml = document.getElementById('modalLastSync');
+                const gl = document.getElementById('gistLastSync');
+                if (ml && gl) ml.textContent = gl.textContent.replace('Last sync: ', '') || '—';
+            } else {
+                inner.classList.remove('gist-modal-connected');
+                document.getElementById('gistToken').value = '';
+                document.getElementById('gistId').value    = '';
+            }
+            document.getElementById('gistModal').classList.add('open');
+        }
+
+        function closeGistModal() {
+            document.getElementById('gistModal').classList.remove('open');
+        }
+
+        function handleGistBackdropClick(e) {
+            if (e.target === document.getElementById('gistModal')) closeGistModal();
+        }
+
+        // ── Connect ──
+        async function gistConnect() {
+            const token = document.getElementById('gistToken').value.trim();
+            const id    = document.getElementById('gistId').value.trim();
+            if (!token) { showToast('❌ Please enter your GitHub token.', 'error'); return; }
+
+            const btn = document.querySelector('#gistModal .btn-modal-confirm');
+            btn.textContent = 'Connecting…';
+            btn.disabled = true;
+
+            try {
+                let gistId = id;
+
+                if (!gistId) {
+                    // Create a fresh gist
+                    gistId = await gistCreate(token);
+                    showToast(`✅ New Gist created! ID: ${gistId}`, 'success');
+                } else {
+                    // Validate the existing gist and pull
+                    setGistStatus('syncing', 'Connecting…');
+                    const remote = await gistPull({ token, id: gistId });
+                    // Merge: keep local tasks + remote tasks (deduplicate by id)
+                    const existingIds = new Set(tasks.map(t => String(t.id)));
+                    const incoming    = remote.tasks.filter(t => !existingIds.has(String(t.id)));
+                    tasks = [...tasks, ...incoming];
+                    setCookie('ganttTasks', tasks);
+                    renderGanttChart();
+                    showToast(`✅ Linked to Gist! Merged ${incoming.length} remote task(s).`, 'success');
+                }
+
+                saveGistCreds(token, gistId);
+                // Push current state
+                await gistPush({ token, id: gistId });
+                const ts = new Date().toLocaleTimeString();
+                setCookie('ganttLastPush', new Date().getTime());
+                setGistStatus('ok', 'Synced');
+                updateGistLastSync(ts);
+                updateGistButton();
+                setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
+                closeGistModal();
+
+            } catch (e) {
+                setGistStatus('error', 'Error');
+                showToast(`❌ Gist connection failed: ${e.message}`, 'error');
+            } finally {
+                btn.textContent = 'Connect & Sync';
+                btn.disabled = false;
+            }
+        }
+
+        // ── Manual pull ──
+        async function gistPullNow() {
+            const creds = getGistCreds();
+            if (!creds) return;
+            try {
+                setGistStatus('syncing', 'Pulling…');
+                const remote = await gistPull(creds);
+                const existingIds = new Set(tasks.map(t => String(t.id)));
+                const incoming    = remote.tasks.filter(t => !existingIds.has(String(t.id)));
+                tasks = [...tasks, ...incoming];
+                setCookie('ganttTasks', tasks);
+                renderGanttChart();
+                const ts = new Date().toLocaleTimeString();
+                setGistStatus('ok', 'Synced');
+                updateGistLastSync(ts);
+                setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
+                showToast(`✅ Pulled from Gist. ${incoming.length} new task(s) merged.`, 'success');
+                closeGistModal();
+            } catch (e) {
+                setGistStatus('error', 'Pull failed');
+                showToast(`❌ Pull failed: ${e.message}`, 'error');
+            }
+        }
+
+        // ── Disconnect (keep Gist intact on GitHub) ──
+        function gistDisconnect() {
+            if (!confirm('Disconnect Gist sync? Your tasks stay in this browser and the Gist remains on GitHub. You can reconnect anytime with the same Gist ID.')) return;
+            clearGistCreds();
+            updateGistButton();
+            setGistStatus('idle', 'Idle');
+            updateGistLastSync('');
+            closeGistModal();
+            showToast('🔌 Disconnected from Gist. Tasks still saved locally.', 'info');
+        }
+
+        // ── Delete Gist + disconnect ──
+        async function gistDeleteAndDisconnect() {
+            if (!confirm('⚠️ This will permanently DELETE the Gist from GitHub and disconnect. Your local tasks are unaffected. Continue?')) return;
+            const creds = getGistCreds();
+            if (!creds) return;
+            try {
+                setGistStatus('syncing', 'Deleting…');
+                await gistRequest('DELETE', `/gists/${creds.id}`, null, creds.token);
+                clearGistCreds();
+                updateGistButton();
+                setGistStatus('idle', 'Idle');
+                updateGistLastSync('');
+                closeGistModal();
+                showToast('🗑️ Gist deleted and disconnected.', 'info');
+            } catch (e) {
+                setGistStatus('error', 'Delete failed');
+                showToast(`❌ Failed to delete Gist: ${e.message}`, 'error');
+            }
+        }
+
+        // ── Keyboard close ──
+        // (appended to existing keydown listener below)
         setDefaultDates();
         renderGanttChart();
+        updateGistButton();
+        gistInitialPull();
 
         document.getElementById('taskName').addEventListener('keypress', e => {
             if (e.key === 'Enter') addTask();
@@ -1648,6 +2205,7 @@
             if (e.key === 'Escape') {
                 closeImportModal();
                 closeEditModal();
+                closeGistModal();
             }
         });
     </script>
