@@ -838,6 +838,26 @@
             gap: 10px;
         }
 
+        #gistRetryBtn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border: 1.5px solid #dc3545;
+            border-radius: 5px;
+            background: transparent;
+            color: #dc3545;
+            font-size: 0.78em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #gistRetryBtn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
         .gist-last-sync {
             font-size: 0.78em;
             color: var(--text-hint);
@@ -1394,6 +1414,10 @@
                     <span class="sync-status-dot dot-idle" id="gistDot"></span>
                     <span id="gistStatusText">Idle</span>
                 </span>
+                <button id="gistRetryBtn" onclick="retryPush()" style="display:none;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+                    Retry
+                </button>
                 <span class="gist-last-sync" id="gistLastSync"></span>
             </div>
         </div>
@@ -2236,18 +2260,44 @@
             const creds = getGistCreds();
             if (!creds) return;
             clearTimeout(_gistPushTimer);
+            setRetryVisible(false);
             _gistPushTimer = setTimeout(async () => {
                 try {
                     await gistPush(creds);
                     const ts = new Date().toLocaleTimeString();
                     setGistStatus('ok', 'Synced');
                     updateGistLastSync(ts);
+                    setRetryVisible(false);
                     setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
                 } catch (e) {
                     setGistStatus('error', 'Push failed');
+                    setRetryVisible(true);
                     console.error('Gist push error:', e);
                 }
             }, 2000);
+        }
+
+        function setRetryVisible(visible) {
+            const btn = document.getElementById('gistRetryBtn');
+            if (btn) btn.style.display = visible ? 'flex' : 'none';
+        }
+
+        async function retryPush() {
+            const creds = getGistCreds();
+            if (!creds) return;
+            setRetryVisible(false);
+            try {
+                await gistPush(creds);
+                const ts = new Date().toLocaleTimeString();
+                setGistStatus('ok', 'Synced');
+                updateGistLastSync(ts);
+                setTimeout(() => setGistStatus('idle', 'Idle'), 3000);
+                showToast('✅ Push succeeded.', 'success');
+            } catch (e) {
+                setGistStatus('error', 'Push failed');
+                setRetryVisible(true);
+                showToast(`❌ Push failed: ${e.message}`, 'error');
+            }
         }
 
         // ── Override saveTasks to also schedule a push ──
