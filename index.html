@@ -1721,8 +1721,9 @@
         }
 
         function confirmModalProceed() {
+            const cb = _confirmCallback;
             closeConfirmModal();
-            if (_confirmCallback) _confirmCallback();
+            if (cb) cb();
         }
 
         function handleConfirmBackdropClick(e) {
