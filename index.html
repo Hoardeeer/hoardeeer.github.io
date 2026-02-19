@@ -1641,16 +1641,31 @@
         }
 
         // ── Core task operations ────────────────────────────────────────────
+        function validateDates(startEl, endEl) {
+            const startDate = startEl.value;
+            const endDate   = endEl.value;
+            // If value is empty but dataset.raw exists, the user typed a non-existent date
+            // (e.g. Feb 30) and the browser silently rejected it
+            if (!startDate && startEl.dataset.raw) return '❌ That start date doesn\'t exist (e.g. Feb 30 is not a real date). Please enter a valid date.';
+            if (!endDate   && endEl.dataset.raw)   return '❌ That end date doesn\'t exist (e.g. Feb 30 is not a real date). Please enter a valid date.';
+            if (!startDate) return '❌ Please enter a start date.';
+            if (!endDate)   return '❌ Please enter an end date.';
+            if (new Date(startDate) > new Date(endDate)) return '❌ End date must be on or after the start date.';
+            return null;
+        }
+
         function addTask() {
             const name      = document.getElementById('taskName').value.trim();
-            const startDate = document.getElementById('startDate').value;
-            const endDate   = document.getElementById('endDate').value;
+            const startEl   = document.getElementById('startDate');
+            const endEl     = document.getElementById('endDate');
             const color     = document.getElementById('taskColor').value;
 
-            if (!name || !startDate || !endDate) { alert('Please fill in all fields'); return; }
-            if (new Date(startDate) > new Date(endDate)) { alert('End date must be after start date'); return; }
+            if (!name) { showToast('❌ Please enter a task name.', 'error'); return; }
 
-            tasks.push({ id: Date.now(), name, startDate, endDate, color });
+            const dateError = validateDates(startEl, endEl);
+            if (dateError) { showToast(dateError, 'error'); return; }
+
+            tasks.push({ id: Date.now(), name, startDate: startEl.value, endDate: endEl.value, color });
             saveTasks();
             renderGanttChart();
             document.getElementById('taskName').value = '';
@@ -1822,31 +1837,20 @@
         function confirmEdit() {
             if (!editingTaskId) return;
 
-            const name = document.getElementById('editTaskName').value.trim();
-            const startDate = document.getElementById('editStartDate').value;
-            const endDate = document.getElementById('editEndDate').value;
-            const color = document.getElementById('editTaskColor').value;
+            const name    = document.getElementById('editTaskName').value.trim();
+            const startEl = document.getElementById('editStartDate');
+            const endEl   = document.getElementById('editEndDate');
+            const color   = document.getElementById('editTaskColor').value;
 
-            if (!name || !startDate || !endDate) {
-                showToast('❌ Please fill in all fields.', 'error');
-                return;
-            }
+            if (!name) { showToast('❌ Please enter a task name.', 'error'); return; }
 
-            if (new Date(startDate) > new Date(endDate)) {
-                showToast('❌ End date must be after start date.', 'error');
-                return;
-            }
+            const dateError = validateDates(startEl, endEl);
+            if (dateError) { showToast(dateError, 'error'); return; }
 
             const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
             if (taskIndex === -1) return;
 
-            tasks[taskIndex] = {
-                ...tasks[taskIndex],
-                name,
-                startDate,
-                endDate,
-                color
-            };
+            tasks[taskIndex] = { ...tasks[taskIndex], name, startDate: startEl.value, endDate: endEl.value, color };
 
             saveTasks();
             renderGanttChart();
@@ -2429,6 +2433,12 @@
         updateGistButton();
         gistInitialPull();
 
+        // Track raw date inputs so we can give specific "date doesn't exist" errors
+        ['startDate', 'endDate', 'editStartDate', 'editEndDate'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) trackRawDateInput(el);
+        });
+
         document.getElementById('taskName').addEventListener('keypress', e => {
             if (e.key === 'Enter') addTask();
         });
@@ -2440,6 +2450,12 @@
                 closeGistModal();
             }
         });
+
+        function trackRawDateInput(el) {
+            el.addEventListener('input', () => {
+                if (el.value) el.dataset.raw = el.value;
+            });
+        }
     </script>
 </body>
 </html>
