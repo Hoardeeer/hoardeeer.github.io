@@ -669,7 +669,144 @@
             line-height: 1.5;
         }
 
-        .gist-setup-section { display: block; }
+        .gist-info-label {
+            color: var(--text-muted);
+            font-size: 0.88em;
+            flex-shrink: 0;
+        }
+
+        .gist-token-row {
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gist-token-value {
+            font-family: 'Courier New', monospace;
+            font-size: 0.82em;
+            color: var(--text-secondary);
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-break: break-all;
+        }
+
+        .gist-token-toggle {
+            flex-shrink: 0;
+            background: transparent;
+            border: 1px solid var(--border-main);
+            border-radius: 4px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .gist-token-toggle:hover {
+            background: var(--bg-controls);
+            color: var(--text-primary);
+        }
+
+        /* Rate limit panel */
+        .gist-ratelimit-panel {
+            background: var(--bg-controls);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 10px;
+        }
+
+        .gist-ratelimit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.82em;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .gist-ratelimit-refresh {
+            background: transparent;
+            border: 1px solid var(--border-main);
+            border-radius: 4px;
+            padding: 3px 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .gist-ratelimit-refresh:hover {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .gist-ratelimit-refresh.spinning svg {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .gist-ratelimit-content {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .ratelimit-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.83em;
+        }
+
+        .ratelimit-label {
+            color: var(--text-muted);
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .ratelimit-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: var(--border-main);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .ratelimit-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .ratelimit-bar.safe   { background: #28a745; }
+        .ratelimit-bar.warn   { background: #f0ad4e; }
+        .ratelimit-bar.danger { background: #dc3545; }
+
+        .ratelimit-numbers {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--text-primary);
+            white-space: nowrap;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .ratelimit-reset {
+            font-size: 0.78em;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
         .gist-connected-section { display: none; }
         .gist-modal-connected .gist-setup-section { display: none; }
         .gist-modal-connected .gist-connected-section { display: block; }
@@ -1255,7 +1392,7 @@
                 Notice: This application utilizes browser cookies to store project data locally. Clearing your browser history or cookies will result in permanent loss of all saved tasks and project information. Use <strong>Export</strong> to back up or transfer your data.
             </div>
             <div class="footer-version">
-                v1.6.0
+                v1.6.1
             </div>
         </div>
     </div>
@@ -1355,16 +1492,35 @@
                         <strong id="modalStatusText">Connected</strong>
                     </div>
                     <div class="gist-status-row" style="margin-top:6px;">
-                        <span style="color:var(--text-muted); font-size:0.88em;">Gist:</span>
+                        <span class="gist-info-label">Gist:</span>
                         <a id="modalGistLink" class="gist-id-link" href="#" target="_blank" rel="noopener"></a>
                     </div>
                     <div class="gist-status-row">
-                        <span style="color:var(--text-muted); font-size:0.88em;">Last sync:</span>
+                        <span class="gist-info-label">Last sync:</span>
                         <span id="modalLastSync" style="font-size:0.88em; color:var(--text-secondary);">—</span>
+                    </div>
+                    <div class="gist-status-row gist-token-row">
+                        <span class="gist-info-label">Token:</span>
+                        <span class="gist-token-value" id="modalTokenDisplay">••••••••••••••••••••</span>
+                        <button class="gist-token-toggle" id="modalTokenToggle" onclick="toggleTokenVisibility()" title="Show/hide token">
+                            <svg id="tokenEyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
                     </div>
                 </div>
 
-                <p class="modal-desc">Your tasks are automatically synced to your GitHub Gist. Changes are pushed after a short delay to batch rapid edits.</p>
+                <div class="gist-ratelimit-panel" id="rateLimitPanel">
+                    <div class="gist-ratelimit-header">
+                        <span>⚡ API Rate Limit</span>
+                        <button class="gist-ratelimit-refresh" onclick="refreshRateLimit()" id="rateLimitRefreshBtn" title="Refresh rate limit">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        </button>
+                    </div>
+                    <div id="rateLimitContent" class="gist-ratelimit-content">
+                        <span style="color:var(--text-hint); font-size:0.82em;">Click refresh to check</span>
+                    </div>
+                </div>
+
+                <p class="modal-desc" style="margin-top:14px;">Your tasks are automatically synced to your GitHub Gist. Changes are pushed after a short delay to batch rapid edits.</p>
 
                 <button class="btn-modal-confirm" style="width:100%;" onclick="gistPullNow()">
                     ↓ Pull latest from Gist now
@@ -2047,7 +2203,81 @@
             }
         }
 
-        // ── Modal open/close ──
+        // ── Token visibility toggle ──
+        let _tokenVisible = false;
+        function toggleTokenVisibility() {
+            const creds   = getGistCreds();
+            const display = document.getElementById('modalTokenDisplay');
+            const icon    = document.getElementById('tokenEyeIcon');
+            if (!creds || !display) return;
+            _tokenVisible = !_tokenVisible;
+            if (_tokenVisible) {
+                display.textContent = creds.token;
+                display.style.whiteSpace = 'normal';
+                // eye-off icon
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                display.textContent = '••••••••••••••••••••';
+                display.style.whiteSpace = 'nowrap';
+                // eye icon
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+
+        // ── Rate limit fetch ──
+        async function fetchRateLimit() {
+            const creds = getGistCreds();
+            if (!creds) return;
+            const btn = document.getElementById('rateLimitRefreshBtn');
+            if (btn) btn.classList.add('spinning');
+            try {
+                // GET /rate_limit does NOT count against primary rate limit
+                const data = await gistRequest('GET', '/rate_limit', null, creds.token);
+                const core = data.resources.core;
+                renderRateLimit(core);
+            } catch (e) {
+                const el = document.getElementById('rateLimitContent');
+                if (el) el.innerHTML = `<span style="color:#dc3545; font-size:0.82em;">Failed to fetch: ${e.message}</span>`;
+            } finally {
+                if (btn) btn.classList.remove('spinning');
+            }
+        }
+
+        function renderRateLimit(core) {
+            const el = document.getElementById('rateLimitContent');
+            if (!el) return;
+            const { limit, remaining, used, reset } = core;
+            const pctUsed    = used / limit;
+            const pctRemain  = remaining / limit;
+            const barClass   = pctUsed < 0.6 ? 'safe' : pctUsed < 0.85 ? 'warn' : 'danger';
+            const resetDate  = new Date(reset * 1000);
+            const resetStr   = resetDate.toLocaleTimeString();
+            const nowMs      = Date.now();
+            const minsLeft   = Math.max(0, Math.round((reset * 1000 - nowMs) / 60000));
+
+            el.innerHTML = `
+                <div class="ratelimit-row">
+                    <span class="ratelimit-label">Remaining</span>
+                    <div class="ratelimit-bar-wrap">
+                        <div class="ratelimit-bar ${barClass}" style="width:${Math.round(pctRemain * 100)}%"></div>
+                    </div>
+                    <span class="ratelimit-numbers">${remaining.toLocaleString()} / ${limit.toLocaleString()}</span>
+                </div>
+                <div class="ratelimit-row">
+                    <span class="ratelimit-label">Used</span>
+                    <div class="ratelimit-bar-wrap">
+                        <div class="ratelimit-bar ${barClass}" style="width:${Math.round(pctUsed * 100)}%"></div>
+                    </div>
+                    <span class="ratelimit-numbers">${used.toLocaleString()} calls</span>
+                </div>
+                <div class="ratelimit-reset">
+                    🔄 Resets at ${resetStr} (in ${minsLeft} min${minsLeft !== 1 ? 's' : ''})
+                </div>`;
+        }
+
+        async function refreshRateLimit() {
+            await fetchRateLimit();
+        }
         function openGistModal() {
             const creds = getGistCreds();
             const inner = document.getElementById('gistModalInner');
@@ -2066,6 +2296,14 @@
                 const ml = document.getElementById('modalLastSync');
                 const gl = document.getElementById('gistLastSync');
                 if (ml && gl) ml.textContent = gl.textContent.replace('Last sync: ', '') || '—';
+                // Reset token to hidden on each open
+                _tokenVisible = false;
+                const display = document.getElementById('modalTokenDisplay');
+                if (display) { display.textContent = '••••••••••••••••••••'; display.style.whiteSpace = 'nowrap'; }
+                const icon = document.getElementById('tokenEyeIcon');
+                if (icon) icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+                // Auto-fetch rate limit each time the modal opens
+                fetchRateLimit();
             } else {
                 inner.classList.remove('gist-modal-connected');
                 document.getElementById('gistToken').value = '';
