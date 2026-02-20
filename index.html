@@ -1142,7 +1142,7 @@
             border-radius: 6px;
             display: flex;
             align-items: center;
-            padding: 0 12px;
+            padding: 0 8px;
             color: white;
             font-size: 0.85em;
             font-weight: 600;
@@ -1151,6 +1151,17 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             transition: all 0.3s;
             cursor: pointer;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .task-bar-label {
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
 
         .task-bar:hover {
@@ -1436,7 +1447,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v1.6.6
+                v1.7.0
             </div>
         </div>
     </div>
@@ -2055,7 +2066,7 @@
                     <div class="task-timeline">
                         ${days.map(() => '<div class="timeline-grid-cell"></div>').join('')}
                         <div class="task-bar color-${task.color}" style="left: ${leftPosition + 2}px; width: ${width}px;">
-                            ${escapeHtml(task.name)}
+                            <span class="task-bar-label">${escapeHtml(task.name)}</span>
                         </div>
                         ${todayMarkerHTML}
                     </div>
