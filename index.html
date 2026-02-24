@@ -903,6 +903,278 @@
             color: var(--text-hint);
             font-style: italic;
         }
+
+        /* ── Color Labels Modal ── */
+        .color-labels-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .color-label-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-label-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .color-label-input {
+            flex: 1;
+            padding: 7px 10px;
+            border: 2px solid var(--border-main);
+            border-radius: 6px;
+            font-size: 0.88em;
+            font-weight: 500;
+            color: var(--input-text);
+            background: var(--input-bg);
+            transition: border-color 0.2s;
+        }
+
+        .color-label-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .color-label-default {
+            font-size: 0.72em;
+            color: var(--text-hint);
+            white-space: nowrap;
+            flex-shrink: 0;
+            width: 52px;
+            text-align: right;
+        }
+
+        .btn-sync.btn-color-labels {
+            background: var(--bg-copy-btn);
+            color: var(--text-secondary);
+            border-color: var(--border-main);
+        }
+
+        .btn-sync.btn-color-labels:hover {
+            background: var(--bg-controls);
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            padding: 0 30px;
+            background: var(--bg-controls);
+            border-bottom: 2px solid var(--border-controls);
+        }
+
+        .tab-btn {
+            position: relative;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.88em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover { color: var(--text-primary); }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-badge {
+            background: #667eea;
+            color: white;
+            font-size: 0.72em;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Archive ── */
+        .archive-container {
+            padding: 24px 30px;
+        }
+
+        .archive-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .archive-header h2 {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .archive-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-hint);
+        }
+
+        .archive-empty svg { opacity: 0.3; margin-bottom: 12px; }
+        .archive-empty p { font-size: 0.95em; margin-top: 6px; }
+
+        .archive-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .archive-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: var(--bg-task-label);
+            border: 1px solid var(--border-task);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .archive-item:hover { background: var(--bg-task-label-hover); }
+
+        .archive-color-swatch {
+            width: 10px;
+            flex-shrink: 0;
+            align-self: stretch;
+            border-radius: 4px;
+        }
+
+        .archive-item-info { flex: 1; min-width: 0; }
+
+        .archive-item-name {
+            font-size: 0.92em;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+
+        .archive-item-dates {
+            font-size: 0.78em;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .archive-item-deleted {
+            font-size: 0.75em;
+            color: var(--text-hint);
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .btn-restore {
+            flex-shrink: 0;
+            padding: 5px 12px;
+            border: 1.5px solid var(--border-main);
+            border-radius: 5px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.78em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-restore:hover {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-archive-delete {
+            flex-shrink: 0;
+            padding: 5px 10px;
+            border: 1.5px solid #dc354544;
+            border-radius: 5px;
+            background: transparent;
+            color: #dc3545;
+            font-size: 0.78em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-archive-delete:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .archive-day-group {
+            margin-bottom: 24px;
+        }
+
+        .archive-day-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-hint);
+            padding: 0 4px 8px 4px;
+            border-bottom: 1px solid var(--border-task);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .archive-day-count {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-hint);
+            background: var(--bg-controls);
+            padding: 1px 7px;
+            border-radius: 10px;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .btn-clear-archive {
+            padding: 6px 14px;
+            border: 1.5px solid #dc354544;
+            border-radius: 6px;
+            background: transparent;
+            color: #dc3545;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear-archive:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
         .gantt-container {
             padding: 30px;
             overflow-x: auto;
@@ -1479,6 +1751,11 @@
                 Copy to Clipboard
             </button>
 
+            <button class="btn-sync btn-color-labels" onclick="openColorLabelsModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="13.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg>
+                Color Labels
+            </button>
+
             <div class="sync-divider"></div>
 
             <button class="btn-sync btn-gist" id="btnGist" onclick="openGistModal()">
@@ -1499,16 +1776,43 @@
             </div>
         </div>
 
-        <div class="gantt-container">
-            <div class="gantt-header">
-                <h2>Project Timeline</h2>
-                <button class="btn-today" onclick="scrollToToday()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Today
-                </button>
+        <!-- ── Tab Bar ── -->
+        <div class="tab-bar">
+            <button class="tab-btn active" id="tabTimeline" onclick="switchTab('timeline')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+                Timeline
+            </button>
+            <button class="tab-btn" id="tabArchive" onclick="switchTab('archive')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                Archive
+                <span class="tab-badge" id="archiveBadge" style="display:none;">0</span>
+            </button>
+        </div>
+
+        <!-- ── Timeline Tab ── -->
+        <div class="tab-panel active" id="panelTimeline">
+            <div class="gantt-container">
+                <div class="gantt-header">
+                    <h2>Project Timeline</h2>
+                    <button class="btn-today" onclick="scrollToToday()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Today
+                    </button>
+                </div>
+                <div class="gantt-wrapper" id="ganttWrapper">
+                    <div id="ganttChart"></div>
+                </div>
             </div>
-            <div class="gantt-wrapper" id="ganttWrapper">
-                <div id="ganttChart"></div>
+        </div>
+
+        <!-- ── Archive Tab ── -->
+        <div class="tab-panel" id="panelArchive">
+            <div class="archive-container">
+                <div class="archive-header">
+                    <h2>✅ Completed Tasks</h2>
+                    <button class="btn-clear-archive" onclick="clearArchive()">Clear Archive</button>
+                </div>
+                <div id="archiveList"></div>
             </div>
         </div>
         
@@ -1517,7 +1821,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v1.7.4
+                v1.8.2
             </div>
         </div>
     </div>
@@ -1695,6 +1999,22 @@
         </div>
     </div>
 
+    <!-- ── Color Labels Modal ── -->
+    <div class="modal-backdrop" id="colorLabelsModal" onclick="handleColorLabelsBackdrop(event)">
+        <div class="modal">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="13.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg>
+                Color Labels
+            </h3>
+            <p class="modal-desc">Give each color a personal meaning. Labels appear in the color picker and throughout the app.</p>
+            <div class="color-labels-list" id="colorLabelsList"></div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="resetColorLabels()">Reset to Defaults</button>
+                <button class="btn-modal-confirm" onclick="saveColorLabels()">Save Labels</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ── Confirm Modal ── -->
     <div class="modal-backdrop" id="confirmModal" onclick="handleConfirmBackdropClick(event)">
         <div class="modal">
@@ -1733,8 +2053,9 @@
 
         // ── State ───────────────────────────────────────────────────────────
         let tasks = getCookie('ganttTasks') || [];
+        let archivedTasks = getCookie('ganttArchive') || [];
         let importMode = 'merge'; // 'merge' | 'replace'
-        let editingTaskId = null; // Track which task is being edited
+        let editingTaskId = null;
 
         // ── Dark Mode ───────────────────────────────────────────────────────
         function applyDark(isDark) {
@@ -1811,7 +2132,248 @@
             setDefaultDates();
         }
 
-        // ── Confirm Modal ───────────────────────────────────────────────────
+        // ── Tab switching ────────────────────────────────────────────────────
+        function switchTab(tab) {
+            document.getElementById('tabTimeline').classList.toggle('active', tab === 'timeline');
+            document.getElementById('tabArchive').classList.toggle('active',  tab === 'archive');
+            document.getElementById('panelTimeline').classList.toggle('active', tab === 'timeline');
+            document.getElementById('panelArchive').classList.toggle('active',  tab === 'archive');
+            if (tab === 'archive') renderArchive();
+        }
+
+        // ── Archive helpers ──────────────────────────────────────────────────
+        function saveArchive() { setCookie('ganttArchive', archivedTasks); }
+
+        function updateArchiveBadge() {
+            const badge = document.getElementById('archiveBadge');
+            if (!badge) return;
+            if (archivedTasks.length > 0) {
+                badge.style.display = 'inline-block';
+                badge.textContent   = archivedTasks.length;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function archiveTask(task) {
+            archivedTasks.unshift({ ...task, deletedAt: new Date().toISOString() });
+            saveArchive();
+            updateArchiveBadge();
+        }
+
+        function timeAgo(isoStr) {
+            const diff = Date.now() - new Date(isoStr).getTime();
+            const mins  = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days  = Math.floor(diff / 86400000);
+            if (mins  < 1)   return 'Just now';
+            if (mins  < 60)  return `${mins} min${mins  !== 1 ? 's' : ''} ago`;
+            if (hours < 24)  return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+            return `${days} day${days !== 1 ? 's' : ''} ago`;
+        }
+
+        function renderArchive() {
+            const el = document.getElementById('archiveList');
+            if (!el) return;
+            if (archivedTasks.length === 0) {
+                el.innerHTML = `
+                    <div class="archive-empty">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                        <p>No completed tasks yet.</p>
+                        <p style="font-size:0.85em; margin-top:4px;">Deleted tasks will appear here as accomplishments.</p>
+                    </div>`;
+                return;
+            }
+
+            // Group by calendar day of deletedAt
+            const groups = {};
+            const dayKeys = [];
+            archivedTasks.forEach((task, i) => {
+                const d   = new Date(task.deletedAt);
+                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                if (!groups[key]) { groups[key] = []; dayKeys.push(key); }
+                groups[key].push({ task, i });
+            });
+
+            // Sort days newest first (already the case since archivedTasks is unshifted)
+            const uniqueDays = [...new Set(dayKeys)];
+
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            function formatDayLabel(key) {
+                const [y, m, d] = key.split('-').map(Number);
+                const date  = new Date(y, m - 1, d);
+                const today = new Date(); today.setHours(0,0,0,0);
+                const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
+                if (date.toDateString() === today.toDateString()) return 'Today';
+                if (date.toDateString() === yest.toDateString())  return 'Yesterday';
+                // If same year, omit year
+                return date.getFullYear() === today.getFullYear()
+                    ? `${months[date.getMonth()]} ${date.getDate()}`
+                    : `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            }
+
+            el.innerHTML = uniqueDays.map(key => {
+                const entries = groups[key];
+                const label   = formatDayLabel(key);
+                const count   = entries.length;
+                const items   = entries.map(({ task, i }) => `
+                    <div class="archive-item">
+                        <div class="archive-color-swatch color-${task.color}"></div>
+                        <div class="archive-item-info">
+                            <div class="archive-item-name">${escapeHtml(task.name)}</div>
+                            <div class="archive-item-dates">${task.startDate} → ${task.endDate}</div>
+                        </div>
+                        <div class="archive-item-deleted">${timeAgo(task.deletedAt)}</div>
+                        <button class="btn-restore" onclick="restoreTask(${i})">↩ Restore</button>
+                        <button class="btn-archive-delete" onclick="deleteArchivedTask(${i})" title="Permanently delete">✕</button>
+                    </div>`).join('');
+
+                return `
+                    <div class="archive-day-group">
+                        <div class="archive-day-label">
+                            ${label}
+                            <span class="archive-day-count">${count} task${count !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="archive-list">${items}</div>
+                    </div>`;
+            }).join('');
+        }
+
+        function deleteArchivedTask(index) {
+            const task = archivedTasks[index];
+            if (!task) return;
+            showConfirmModal(
+                '🗑️ Permanently Delete',
+                `Permanently remove <strong>${escapeHtml(task.name)}</strong> from the archive? This cannot be undone.`,
+                'Delete',
+                () => {
+                    archivedTasks.splice(index, 1);
+                    saveArchive();
+                    updateArchiveBadge();
+                    renderArchive();
+                    showToast('🗑️ Removed from archive.', 'info');
+                }
+            );
+        }
+
+        function restoreTask(index) {
+            const task = archivedTasks[index];
+            if (!task) return;
+            const { deletedAt, ...restored } = task;
+            tasks.push(restored);
+            archivedTasks.splice(index, 1);
+            saveTasks();
+            saveArchive();
+            updateArchiveBadge();
+            renderGanttChart();
+            renderArchive();
+            showToast(`↩ "${task.name}" restored to timeline.`, 'success');
+        }
+
+        function clearArchive() {
+            if (archivedTasks.length === 0) { showToast('Archive is already empty.', 'error'); return; }
+            showConfirmModal(
+                '🗑️ Clear Archive',
+                `This will permanently remove all <strong>${archivedTasks.length} archived task${archivedTasks.length !== 1 ? 's' : ''}</strong>. This cannot be undone.`,
+                'Clear Archive',
+                () => {
+                    archivedTasks = [];
+                    saveArchive();
+                    updateArchiveBadge();
+                    renderArchive();
+                    showToast('🗑️ Archive cleared.', 'info');
+                }
+            );
+        }
+
+        // ── Color Labels ─────────────────────────────────────────────────────
+        const COLOR_DEFAULTS = {
+            blue:   'Blue',
+            green:  'Green',
+            orange: 'Orange',
+            purple: 'Purple',
+            red:    'Red',
+            gray:   'Gray',
+            amber:  'Amber',
+        };
+
+        // Gradient CSS for each swatch in the modal (mirrors the CSS classes)
+        const COLOR_GRADIENTS = {
+            blue:   'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            green:  'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+            orange: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            purple: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            red:    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            gray:   'linear-gradient(135deg, #8e9eab 0%, #b0bec5 100%)',
+            amber:  'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
+        };
+
+        let colorLabels = { ...COLOR_DEFAULTS, ...(getCookie('ganttColorLabels') || {}) };
+
+        function getColorLabel(color) {
+            return colorLabels[color] || COLOR_DEFAULTS[color] || color;
+        }
+
+        function updateColorSelects() {
+            ['taskColor', 'editTaskColor'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                const current = sel.value;
+                sel.innerHTML = Object.keys(COLOR_DEFAULTS).map(c =>
+                    `<option value="${c}">${getColorLabel(c)}</option>`
+                ).join('');
+                sel.value = current;
+            });
+        }
+
+        function openColorLabelsModal() {
+            const list = document.getElementById('colorLabelsList');
+            list.innerHTML = Object.keys(COLOR_DEFAULTS).map(c => `
+                <div class="color-label-row">
+                    <div class="color-label-swatch" style="background:${COLOR_GRADIENTS[c]};"></div>
+                    <input class="color-label-input" id="clabel-${c}"
+                           value="${escapeHtml(getColorLabel(c))}"
+                           placeholder="${COLOR_DEFAULTS[c]}"
+                           maxlength="32">
+                    <span class="color-label-default">${COLOR_DEFAULTS[c]}</span>
+                </div>`).join('');
+            document.getElementById('colorLabelsModal').classList.add('open');
+            // Focus first input
+            const first = document.getElementById(`clabel-${Object.keys(COLOR_DEFAULTS)[0]}`);
+            if (first) setTimeout(() => first.focus(), 80);
+        }
+
+        function closeColorLabelsModal() {
+            document.getElementById('colorLabelsModal').classList.remove('open');
+        }
+
+        function handleColorLabelsBackdrop(e) {
+            if (e.target === document.getElementById('colorLabelsModal')) closeColorLabelsModal();
+        }
+
+        function saveColorLabels() {
+            Object.keys(COLOR_DEFAULTS).forEach(c => {
+                const input = document.getElementById(`clabel-${c}`);
+                const val   = input ? input.value.trim() : '';
+                colorLabels[c] = val || COLOR_DEFAULTS[c];
+            });
+            setCookie('ganttColorLabels', colorLabels);
+            updateColorSelects();
+            closeColorLabelsModal();
+            showToast('✅ Color labels saved.', 'success');
+        }
+
+        function resetColorLabels() {
+            colorLabels = { ...COLOR_DEFAULTS };
+            setCookie('ganttColorLabels', colorLabels);
+            updateColorSelects();
+            // Refresh inputs in modal
+            Object.keys(COLOR_DEFAULTS).forEach(c => {
+                const input = document.getElementById(`clabel-${c}`);
+                if (input) input.value = COLOR_DEFAULTS[c];
+            });
+            showToast('↺ Color labels reset to defaults.', 'info');
+        }
         let _confirmCallback = null;
 
         function showConfirmModal(title, message, okLabel, callback) {
@@ -1841,14 +2403,15 @@
             const task = tasks.find(t => t.id === id);
             if (!task) return;
             showConfirmModal(
-                '🗑️ Delete Task',
-                `Are you sure you want to delete <strong>${escapeHtml(task.name)}</strong>? This cannot be undone.`,
-                'Delete',
+                '✅ Mark as Complete',
+                `Move <strong>${escapeHtml(task.name)}</strong> to the archive as a completed task?`,
+                'Complete & Archive',
                 () => {
+                    archiveTask(task);
                     tasks = tasks.filter(t => t.id !== id);
                     saveTasks();
                     renderGanttChart();
-                    showToast('🗑️ Task deleted.', 'info');
+                    showToast(`✅ "${task.name}" archived.`, 'success');
                 }
             );
         }
@@ -1856,14 +2419,15 @@
         function clearAll() {
             if (tasks.length === 0) { showToast('No tasks to clear.', 'error'); return; }
             showConfirmModal(
-                '⚠️ Clear All Tasks',
-                `This will permanently delete all <strong>${tasks.length} task${tasks.length !== 1 ? 's' : ''}</strong>. This cannot be undone.`,
-                'Clear All',
+                '✅ Complete All Tasks',
+                `Move all <strong>${tasks.length} task${tasks.length !== 1 ? 's' : ''}</strong> to the archive?`,
+                'Complete All & Archive',
                 () => {
+                    tasks.forEach(t => archiveTask(t));
                     tasks = [];
                     saveTasks();
                     renderGanttChart();
-                    showToast('🗑️ All tasks cleared.', 'info');
+                    showToast('✅ All tasks archived.', 'success');
                 }
             );
         }
@@ -2342,13 +2906,13 @@
             const raw = file.content || await (await fetch(file.raw_url)).text();
             const parsed = JSON.parse(raw);
             if (!Array.isArray(parsed.tasks)) throw new Error('Invalid Gist data format');
-            return parsed; // { tasks, updatedAt }
+            return parsed; // { tasks, archive, updatedAt }
         }
 
         // ── Push to Gist ──
         async function gistPush(creds) {
             setGistStatus('syncing', 'Pushing…');
-            const payload = { tasks, updatedAt: new Date().toISOString() };
+            const payload = { tasks, archive: archivedTasks, updatedAt: new Date().toISOString() };
             await gistRequest('PATCH', `/gists/${creds.id}`, {
                 files: { [GIST_FILENAME]: { content: JSON.stringify(payload, null, 2) } }
             }, creds.token);
@@ -2357,7 +2921,7 @@
         // ── Create new Gist ──
         async function gistCreate(token) {
             setGistStatus('syncing', 'Creating Gist…');
-            const payload = { tasks, updatedAt: new Date().toISOString() };
+            const payload = { tasks, archive: archivedTasks, updatedAt: new Date().toISOString() };
             const data = await gistRequest('POST', '/gists', {
                 description: 'Gantt Chart Tasks — auto-synced',
                 public: false,
@@ -2429,7 +2993,12 @@
                 // Overwrite local with remote — Gist is the source of truth
                 tasks = remote.tasks;
                 setCookie('ganttTasks', tasks);
+                if (Array.isArray(remote.archive)) {
+                    archivedTasks = remote.archive;
+                    setCookie('ganttArchive', archivedTasks);
+                }
                 renderGanttChart();
+                updateArchiveBadge();
                 const ts = new Date().toLocaleTimeString();
                 setGistStatus('ok', 'Synced');
                 updateGistLastSync(ts);
@@ -2616,7 +3185,12 @@
                 // Overwrite local with remote — Gist is the source of truth
                 tasks = remote.tasks;
                 setCookie('ganttTasks', tasks);
+                if (Array.isArray(remote.archive)) {
+                    archivedTasks = remote.archive;
+                    setCookie('ganttArchive', archivedTasks);
+                }
                 renderGanttChart();
+                updateArchiveBadge();
                 const ts = new Date().toLocaleTimeString();
                 setGistStatus('ok', 'Synced');
                 updateGistLastSync(ts);
@@ -2665,6 +3239,8 @@
         // (appended to existing keydown listener below)
         setDefaultDates();
         renderGanttChart();
+        updateArchiveBadge();
+        updateColorSelects();
         requestAnimationFrame(() => scrollToToday(false));
         updateGistButton();
         gistInitialPull();
@@ -2685,6 +3261,7 @@
                 closeEditModal();
                 closeGistModal();
                 closeConfirmModal();
+                closeColorLabelsModal();
             }
         });
 
