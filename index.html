@@ -2161,17 +2161,34 @@
             const todayOffset = getDaysDifference(start, today);
             if (todayOffset < 0) return;
 
-            // todayPx = pixel position of today's left edge within the full scrollable content
-            // (label column width + days before today × day width)
-            const DAY_WIDTH   = 90;
-            const LABEL_WIDTH = 380;
-            const todayPx     = LABEL_WIDTH + todayOffset * DAY_WIDTH;
+            const DAY_WIDTH = 90;
 
-            // Place today 1/3 from the left of the visible viewport
-            const scrollLeft  = todayPx - Math.round(wrapper.clientWidth / 3);
+            // Read the actual rendered label width from the DOM — works for any
+            // screen size or orientation without hardcoding breakpoint values
+            const labelEl    = wrapper.querySelector('.label-header') ||
+                               wrapper.querySelector('.task-label');
+            const labelWidth = labelEl ? labelEl.getBoundingClientRect().width : 0;
+
+            // Full pixel position of today's left edge inside the scrollable content
+            const todayPx   = labelWidth + todayOffset * DAY_WIDTH;
+
+            // Place today 1/3 from the left of the visible wrapper viewport
+            const scrollLeft = todayPx - Math.round(wrapper.clientWidth / 3);
 
             wrapper.scrollTo({ left: Math.max(0, scrollLeft), behavior: smooth ? 'smooth' : 'instant' });
         }
+
+        // Re-focus today when orientation changes
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => scrollToToday(false), 300);
+        });
+
+        // Also handle resize (covers desktop window resizing + mobile keyboard appearing)
+        let _resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(() => scrollToToday(false), 250);
+        });
         function escapeHtml(str) {
             return String(str)
                 .replace(/&/g, '&amp;')
