@@ -1174,6 +1174,8 @@
         .color-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
         .color-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .color-red    { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .color-gray   { background: linear-gradient(135deg, #8e9eab 0%, #b0bec5 100%); }
+        .color-amber  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
 
         .empty-state {
             text-align: center;
@@ -1384,6 +1386,8 @@
                         <option value="orange">Orange</option>
                         <option value="purple">Purple</option>
                         <option value="red">Red</option>
+                        <option value="gray">Gray — Leave it</option>
+                        <option value="amber">Amber — Focus now</option>
                     </select>
                 </div>
                 <div class="button-group">
@@ -1447,7 +1451,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v1.7.0
+                v1.7.1
             </div>
         </div>
     </div>
@@ -1521,6 +1525,8 @@
                     <option value="orange">Orange</option>
                     <option value="purple">Purple</option>
                     <option value="red">Red</option>
+                    <option value="gray">Gray — Leave it</option>
+                    <option value="amber">Amber — Focus now</option>
                 </select>
             </div>
 
@@ -1887,7 +1893,7 @@
             if (valid.length === 0) { showToast('❌ No valid tasks found in the imported data.', 'error'); return; }
 
             // Normalise: ensure each task has an id and a valid color
-            const validColors = ['blue','green','orange','purple','red'];
+            const validColors = ['blue','green','orange','purple','red','gray','amber'];
             const normalised = valid.map(t => ({
                 id:        t.id || Date.now() + Math.random(),
                 name:      t.name,
