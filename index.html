@@ -1794,10 +1794,16 @@
             <div class="gantt-container">
                 <div class="gantt-header">
                     <h2>Project Timeline</h2>
-                    <button class="btn-today" onclick="scrollToToday()">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        Today
-                    </button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-today" onclick="scrollToStart()" title="Scroll to first task">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+                            Tasks
+                        </button>
+                        <button class="btn-today" onclick="scrollToToday()">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Today
+                        </button>
+                    </div>
                 </div>
                 <div class="gantt-wrapper" id="ganttWrapper">
                     <div id="ganttChart"></div>
@@ -1821,7 +1827,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v1.8.2
+                v1.8.3
             </div>
         </div>
     </div>
@@ -2359,6 +2365,7 @@
             });
             setCookie('ganttColorLabels', colorLabels);
             updateColorSelects();
+            schedulePush();
             closeColorLabelsModal();
             showToast('✅ Color labels saved.', 'success');
         }
@@ -2713,6 +2720,12 @@
             chartDiv.innerHTML = html;
         }
 
+        function scrollToStart(smooth = true) {
+            const wrapper = document.getElementById('ganttWrapper');
+            if (!wrapper) return;
+            wrapper.scrollTo({ left: 0, behavior: smooth ? 'smooth' : 'instant' });
+        }
+
         function scrollToToday(smooth = true) {
             const wrapper = document.getElementById('ganttWrapper');
             if (!wrapper) return;
@@ -2912,7 +2925,7 @@
         // ── Push to Gist ──
         async function gistPush(creds) {
             setGistStatus('syncing', 'Pushing…');
-            const payload = { tasks, archive: archivedTasks, updatedAt: new Date().toISOString() };
+            const payload = { tasks, archive: archivedTasks, colorLabels, updatedAt: new Date().toISOString() };
             await gistRequest('PATCH', `/gists/${creds.id}`, {
                 files: { [GIST_FILENAME]: { content: JSON.stringify(payload, null, 2) } }
             }, creds.token);
@@ -2921,7 +2934,7 @@
         // ── Create new Gist ──
         async function gistCreate(token) {
             setGistStatus('syncing', 'Creating Gist…');
-            const payload = { tasks, archive: archivedTasks, updatedAt: new Date().toISOString() };
+            const payload = { tasks, archive: archivedTasks, colorLabels, updatedAt: new Date().toISOString() };
             const data = await gistRequest('POST', '/gists', {
                 description: 'Gantt Chart Tasks — auto-synced',
                 public: false,
@@ -2996,6 +3009,11 @@
                 if (Array.isArray(remote.archive)) {
                     archivedTasks = remote.archive;
                     setCookie('ganttArchive', archivedTasks);
+                }
+                if (remote.colorLabels && typeof remote.colorLabels === 'object') {
+                    colorLabels = { ...COLOR_DEFAULTS, ...remote.colorLabels };
+                    setCookie('ganttColorLabels', colorLabels);
+                    updateColorSelects();
                 }
                 renderGanttChart();
                 updateArchiveBadge();
@@ -3188,6 +3206,11 @@
                 if (Array.isArray(remote.archive)) {
                     archivedTasks = remote.archive;
                     setCookie('ganttArchive', archivedTasks);
+                }
+                if (remote.colorLabels && typeof remote.colorLabels === 'object') {
+                    colorLabels = { ...COLOR_DEFAULTS, ...remote.colorLabels };
+                    setCookie('ganttColorLabels', colorLabels);
+                    updateColorSelects();
                 }
                 renderGanttChart();
                 updateArchiveBadge();
