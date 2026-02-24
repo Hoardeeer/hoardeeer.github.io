@@ -2147,9 +2147,6 @@
 
             html += '</div>';
             chartDiv.innerHTML = html;
-
-            // Auto-scroll to today after render
-            requestAnimationFrame(() => scrollToToday(false));
         }
 
         function scrollToToday(smooth = true) {
@@ -2178,17 +2175,8 @@
             wrapper.scrollTo({ left: Math.max(0, scrollLeft), behavior: smooth ? 'smooth' : 'instant' });
         }
 
-        // Re-focus today when orientation changes
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => scrollToToday(false), 300);
-        });
-
-        // Also handle resize (covers desktop window resizing + mobile keyboard appearing)
-        let _resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(_resizeTimer);
-            _resizeTimer = setTimeout(() => scrollToToday(false), 250);
-        });
+        // Re-focus today when orientation changes or window resizes —
+        // only if triggered by the user via the Today button (handled in scrollToToday itself)
         function escapeHtml(str) {
             return String(str)
                 .replace(/&/g, '&amp;')
@@ -2677,6 +2665,7 @@
         // (appended to existing keydown listener below)
         setDefaultDates();
         renderGanttChart();
+        requestAnimationFrame(() => scrollToToday(false));
         updateGistButton();
         gistInitialPull();
 
