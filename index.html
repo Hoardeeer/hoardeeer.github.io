@@ -1128,6 +1128,13 @@
             color: white;
         }
 
+        .archive-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
         .archive-day-group {
             margin-bottom: 24px;
         }
@@ -1684,6 +1691,68 @@
             .sync-hint {
                 display: none;
             }
+
+            /* ── Archive mobile ── */
+            .archive-container {
+                padding: 16px 14px;
+            }
+
+            .archive-header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .archive-item {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 10px 11px;
+                align-items: flex-start;
+            }
+
+            .archive-color-swatch {
+                width: 7px;
+                margin-top: 2px;
+            }
+
+            .archive-item-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            /* On narrow screens: timestamp goes full-width below info,
+               actions stay on the same line as info via order */
+            .archive-item-deleted {
+                order: 4;
+                flex-basis: 100%;
+                padding-left: 15px;
+                text-align: left;
+            }
+
+            .archive-item-actions {
+                order: 3;
+                margin-left: auto;
+                flex-shrink: 0;
+            }
+
+            .btn-restore,
+            .btn-archive-delete {
+                padding: 5px 10px;
+                font-size: 0.76em;
+            }
+
+            .archive-day-label {
+                font-size: 0.72em;
+                padding-bottom: 6px;
+            }
+
+            .tab-bar {
+                padding: 0 14px;
+            }
+
+            .tab-btn {
+                padding: 10px 14px;
+                font-size: 0.82em;
+            }
         }
     </style>
 </head>
@@ -2230,8 +2299,10 @@
                             <div class="archive-item-dates">${task.startDate} → ${task.endDate}</div>
                         </div>
                         <div class="archive-item-deleted">${timeAgo(task.deletedAt)}</div>
-                        <button class="btn-restore" onclick="restoreTask(${i})">↩ Restore</button>
-                        <button class="btn-archive-delete" onclick="deleteArchivedTask(${i})" title="Permanently delete">✕</button>
+                        <div class="archive-item-actions">
+                            <button class="btn-restore" onclick="restoreTask(${i})">↩ Restore</button>
+                            <button class="btn-archive-delete" onclick="deleteArchivedTask(${i})" title="Permanently delete">✕</button>
+                        </div>
                     </div>`).join('');
 
                 return `
