@@ -2159,14 +2159,16 @@
             const { start } = getDateRange();
             const today = new Date(); today.setHours(0,0,0,0);
             const todayOffset = getDaysDifference(start, today);
-            if (todayOffset < 0) return; // today is before the range
+            if (todayOffset < 0) return;
 
-            // Position today 1/3 from the left of the visible wrapper width
-            const dayWidth    = 90;
-            const todayPx     = todayOffset * dayWidth; // left edge of today's cell
-            const labelWidth  = 380;                    // task label column
-            const visibleW    = wrapper.clientWidth - labelWidth;
-            const scrollLeft  = todayPx - Math.round(visibleW / 3);
+            // todayPx = pixel position of today's left edge within the full scrollable content
+            // (label column width + days before today × day width)
+            const DAY_WIDTH   = 90;
+            const LABEL_WIDTH = 380;
+            const todayPx     = LABEL_WIDTH + todayOffset * DAY_WIDTH;
+
+            // Place today 1/3 from the left of the visible viewport
+            const scrollLeft  = todayPx - Math.round(wrapper.clientWidth / 3);
 
             wrapper.scrollTo({ left: Math.max(0, scrollLeft), behavior: smooth ? 'smooth' : 'instant' });
         }
