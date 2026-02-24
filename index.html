@@ -811,7 +811,47 @@
         .gist-modal-connected .gist-setup-section { display: none; }
         .gist-modal-connected .gist-connected-section { display: block; }
 
-        /* ── Confirm modal ── */
+        /* ── Gray: "leave it" — muted, de-emphasised ── */
+        .task-label-gray {
+            background: var(--bg-task-label);
+            opacity: 0.6;
+        }
+
+        .task-label-gray:hover {
+            opacity: 0.8;
+        }
+
+        .task-label-gray .task-name {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .task-label-gray .task-dates {
+            opacity: 0.7;
+        }
+
+        /* ── Amber: "focus now" — warm highlight, commanding attention ── */
+        .task-label-amber {
+            background: rgba(247, 151, 30, 0.08);
+            border-left: 3px solid #f7971e;
+        }
+
+        .task-label-amber:hover {
+            background: rgba(247, 151, 30, 0.14);
+        }
+
+        .task-label-amber .task-name {
+            color: #c97a10;
+        }
+
+        html.dark .task-label-amber .task-name {
+            color: #ffd200;
+        }
+
+        html.dark .task-label-amber {
+            background: rgba(247, 151, 30, 0.1);
+            border-left-color: #ffd200;
+        }
         .confirm-modal-message {
             font-size: 0.95em;
             color: var(--text-secondary);
@@ -941,8 +981,8 @@
         }
 
         .day-cell {
-            flex: 0 0 60px;
-            width: 60px;
+            flex: 0 0 90px;
+            width: 90px;
             text-align: center;
             font-size: 0.85em;
             padding: 5px 0;
@@ -1125,8 +1165,8 @@
         }
 
         .timeline-grid-cell {
-            flex: 0 0 60px;
-            width: 60px;
+            flex: 0 0 90px;
+            width: 90px;
             border-right: 1px solid var(--border-grid-cell);
             box-sizing: border-box;
             align-self: stretch;
@@ -2041,13 +2081,13 @@
                 const taskEnd      = new Date(task.endDate);
                 const startOffset  = getDaysDifference(start, taskStart);
                 const duration     = getDaysDifference(taskStart, taskEnd) + 1;
-                const leftPosition = startOffset * 60;
-                const width        = duration * 60 - 4;
+                const leftPosition = startOffset * 90;
+                const width        = duration * 90 - 4;
 
                 const todayOffset = getDaysDifference(start, today);
                 let todayMarkerHTML = '';
                 if (todayOffset >= 0 && todayOffset < days.length) {
-                    const todayPos = todayOffset * 60 + 30 - 2;
+                    const todayPos = todayOffset * 90 + 45 - 2;
                     if (!todayLabelShown) {
                         todayMarkerHTML = `<div class="today-marker" style="left: ${todayPos}px;"></div>`;
                         todayLabelShown = true;
@@ -2058,7 +2098,7 @@
 
                 html += `
                 <div class="gantt-row">
-                    <div class="task-label">
+                    <div class="task-label task-label-${task.color}">
                         <div class="task-info">
                             <div class="task-name">${escapeHtml(task.name)}</div>
                             <div class="task-dates">${formatDate(task.startDate)} – ${formatDate(task.endDate)}</div>
