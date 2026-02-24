@@ -811,46 +811,42 @@
         .gist-modal-connected .gist-setup-section { display: none; }
         .gist-modal-connected .gist-connected-section { display: block; }
 
-        /* ── Gray: "leave it" — muted, de-emphasised ── */
-        .task-label-gray {
-            background: var(--bg-task-label);
-            opacity: 0.6;
+        /* ── Task state: skip (muted) ── */
+        .task-label-state-skip {
+            opacity: 0.45;
         }
-
-        .task-label-gray:hover {
-            opacity: 0.8;
+        .task-label-state-skip:hover {
+            opacity: 0.7;
         }
-
-        .task-label-gray .task-name {
+        .task-label-state-skip .task-name {
             color: var(--text-muted);
             font-weight: 500;
         }
-
-        .task-label-gray .task-dates {
-            opacity: 0.7;
+        .task-bar-state-skip {
+            filter: grayscale(80%) opacity(0.55);
         }
 
-        /* ── Amber: "focus now" — warm highlight, commanding attention ── */
-        .task-label-amber {
-            background: rgba(247, 151, 30, 0.08);
+        /* ── Task state: focus (highlighted) ── */
+        .task-label-state-focus {
+            background: rgba(247, 151, 30, 0.07);
             border-left: 3px solid #f7971e;
         }
-
-        .task-label-amber:hover {
-            background: rgba(247, 151, 30, 0.14);
+        .task-label-state-focus:hover {
+            background: rgba(247, 151, 30, 0.13);
         }
-
-        .task-label-amber .task-name {
+        .task-label-state-focus .task-name {
             color: #c97a10;
+            font-weight: 700;
         }
-
-        html.dark .task-label-amber .task-name {
-            color: #ffd200;
-        }
-
-        html.dark .task-label-amber {
+        html.dark .task-label-state-focus {
             background: rgba(247, 151, 30, 0.1);
             border-left-color: #ffd200;
+        }
+        html.dark .task-label-state-focus .task-name {
+            color: #ffd200;
+        }
+        .task-bar-state-focus {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
         }
         .confirm-modal-message {
             font-size: 0.95em;
@@ -1247,6 +1243,7 @@
 
         /* Each row is a flex container so label and timeline share the same height */
         .gantt-row {
+            position: relative;
             display: flex;
             align-items: stretch;
         }
@@ -1789,8 +1786,6 @@
                         <option value="orange">Orange</option>
                         <option value="purple">Purple</option>
                         <option value="red">Red</option>
-                        <option value="gray">Gray — Leave it</option>
-                        <option value="amber">Amber — Focus now</option>
                     </select>
                 </div>
                 <div class="button-group">
@@ -1896,7 +1891,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v1.8.3
+                v1.9.2
             </div>
         </div>
     </div>
@@ -1970,8 +1965,6 @@
                     <option value="orange">Orange</option>
                     <option value="purple">Purple</option>
                     <option value="red">Red</option>
-                    <option value="gray">Gray — Leave it</option>
-                    <option value="amber">Amber — Focus now</option>
                 </select>
             </div>
 
@@ -2231,7 +2224,8 @@
         }
 
         function archiveTask(task) {
-            archivedTasks.unshift({ ...task, deletedAt: new Date().toISOString() });
+            const { state, ...clean } = task;
+            archivedTasks.unshift({ ...clean, deletedAt: new Date().toISOString() });
             saveArchive();
             updateArchiveBadge();
         }
@@ -2336,7 +2330,7 @@
         function restoreTask(index) {
             const task = archivedTasks[index];
             if (!task) return;
-            const { deletedAt, ...restored } = task;
+            const { deletedAt, state, ...restored } = task;
             tasks.push(restored);
             archivedTasks.splice(index, 1);
             saveTasks();
@@ -2370,8 +2364,6 @@
             orange: 'Orange',
             purple: 'Purple',
             red:    'Red',
-            gray:   'Gray',
-            amber:  'Amber',
         };
 
         // Gradient CSS for each swatch in the modal (mirrors the CSS classes)
@@ -2381,8 +2373,6 @@
             orange: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
             purple: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             red:    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            gray:   'linear-gradient(135deg, #8e9eab 0%, #b0bec5 100%)',
-            amber:  'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
         };
 
         let colorLabels = { ...COLOR_DEFAULTS, ...(getCookie('ganttColorLabels') || {}) };
@@ -2475,6 +2465,16 @@
 
         function handleConfirmBackdropClick(e) {
             if (e.target === document.getElementById('confirmModal')) closeConfirmModal();
+        }
+
+        function cycleTaskState(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            const cycle = [null, 'focus', 'skip'];
+            const idx   = cycle.indexOf(task.state || null);
+            task.state  = cycle[(idx + 1) % cycle.length];
+            saveTasks();
+            renderGanttChart();
         }
 
         function deleteTask(id) {
@@ -2601,7 +2601,7 @@
             if (valid.length === 0) { showToast('❌ No valid tasks found in the imported data.', 'error'); return; }
 
             // Normalise: ensure each task has an id and a valid color
-            const validColors = ['blue','green','orange','purple','red','gray','amber'];
+            const validColors = ['blue','green','orange','purple','red'];
             const normalised = valid.map(t => ({
                 id:        t.id || Date.now() + Math.random(),
                 name:      t.name,
@@ -2764,9 +2764,14 @@
                     }
                 }
 
+                const state      = task.state || null;
+                const stateClass = state ? `task-label-state-${state}` : '';
+                const barStateClass = state ? `task-bar-state-${state}` : '';
+
+                const stateTitles = { null: 'Click to focus', focus: 'Click to skip', skip: 'Click to reset' };
                 html += `
                 <div class="gantt-row">
-                    <div class="task-label task-label-${task.color}">
+                    <div class="task-label ${stateClass}">
                         <div class="task-info">
                             <div class="task-name">${escapeHtml(task.name)}</div>
                             <div class="task-dates">${formatDate(task.startDate)} – ${formatDate(task.endDate)}</div>
@@ -2779,7 +2784,10 @@
                     </div>
                     <div class="task-timeline">
                         ${days.map(() => '<div class="timeline-grid-cell"></div>').join('')}
-                        <div class="task-bar color-${task.color}" style="left: ${leftPosition + 2}px; width: ${width}px;">
+                        <div class="task-bar color-${task.color} ${barStateClass}"
+                             style="left: ${leftPosition + 2}px; width: ${width}px;"
+                             onclick="cycleTaskState(${task.id})"
+                             title="${stateTitles[state] || 'Click to focus'}">
                             <span class="task-bar-label">${escapeHtml(task.name)}</span>
                         </div>
                         ${todayMarkerHTML}
