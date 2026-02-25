@@ -80,8 +80,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: var(--bg-page);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
             transition: background 0.3s;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .container { border-radius: 0; min-height: 100vh; }
         }
 
         .container {
@@ -97,138 +102,232 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 0 24px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: relative;
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 1.05em;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .header-brand-icon {
+            font-size: 1.15em;
         }
 
         .dark-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             background: rgba(255,255,255,0.15);
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 1.5px solid rgba(255,255,255,0.3);
             border-radius: 50px;
             color: white;
-            font-size: 0.85em;
+            font-size: 0.8em;
             font-weight: 700;
-            padding: 8px 16px;
+            padding: 6px 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 7px;
-            transition: all 0.25s;
-            backdrop-filter: blur(4px);
+            gap: 6px;
+            transition: all 0.2s;
             white-space: nowrap;
         }
 
         .dark-toggle:hover {
             background: rgba(255,255,255,0.28);
             border-color: rgba(255,255,255,0.6);
-            transform: translateY(-1px);
         }
 
-        .dark-toggle-icon {
-            font-size: 1.1em;
-            line-height: 1;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
+        .dark-toggle-icon { font-size: 1em; line-height: 1; }
 
         .controls {
-            padding: 25px 30px;
+            padding: 12px 20px;
             background: var(--bg-controls);
-            border-bottom: 2px solid var(--border-controls);
+            border-bottom: 1px solid var(--border-controls);
             transition: background 0.3s, border-color 0.3s;
         }
 
-        .input-group {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        @media (max-width: 900px) {
-            .input-group {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .input-field:first-child {
-                grid-column: 1 / -1;
-            }
-            
-            .button-group {
-                grid-column: 1 / -1;
-                justify-content: stretch;
-            }
-            
-            .button-group .btn {
-                flex: 1;
-            }
-        }
-        
-        @media (max-width: 500px) {
-            .input-group {
-                grid-template-columns: 1fr;
-            }
-            
-            .input-field:first-child {
-                grid-column: 1;
-            }
-            
-            .controls {
-                padding: 15px;
-            }
-        }
-
-        .input-field {
+        /* ── Quick-add bar: always visible ── */
+        .quick-add-bar {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
-        .input-field label {
-            font-size: 0.85em;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .input-field input,
-        .input-field select {
-            padding: 10px 12px;
+        .quick-add-bar input[type=text] {
+            flex: 1;
+            padding: 9px 13px;
             border: 2px solid var(--border-main);
-            border-radius: 6px;
-            font-size: 1em;
-            transition: all 0.3s;
+            border-radius: 8px;
+            font-size: 0.95em;
             background: var(--input-bg);
             color: var(--input-text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            min-width: 0;
         }
 
-        .input-field input:focus,
-        .input-field select:focus {
+        .quick-add-bar input[type=text]:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
         }
 
-        .btn {
-            padding: 12px 24px;
+        .btn-add-task {
+            padding: 9px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 1em;
+            border-radius: 8px;
+            font-size: 0.92em;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-add-task:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+        }
+
+        .btn-expand-details {
+            padding: 9px 11px;
+            background: transparent;
+            border: 2px solid var(--border-main);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .btn-expand-details:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-expand-details.open {
+            border-color: #667eea;
+            color: #667eea;
+            background: rgba(102,126,234,0.06);
+        }
+
+        .btn-expand-details svg {
+            transition: transform 0.25s;
+        }
+
+        .btn-expand-details.open svg {
+            transform: rotate(180deg);
+        }
+
+        /* ── Details drawer ── */
+        .details-drawer {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.25s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .details-drawer.open {
+            max-height: 600px;
+            opacity: 1;
+            margin-top: 12px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .details-grid { grid-template-columns: 1fr; }
+        }
+
+        .detail-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-field label {
+            font-size: 0.8em;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .detail-field input[type=date],
+        .detail-field input[type=text] {
+            padding: 8px 11px;
+            border: 2px solid var(--border-main);
+            border-radius: 7px;
+            font-size: 0.92em;
+            background: var(--input-bg);
+            color: var(--input-text);
+            transition: border-color 0.2s;
+        }
+
+        .detail-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .drawer-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .drawer-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .btn-clear-all {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.82em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            align-self: flex-end;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .btn-clear-all:hover { color: #dc3545; }
+
+        /* keep old .btn .btn-primary .btn-secondary for modal buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.92em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-primary {
@@ -237,105 +336,191 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.4);
         }
 
         .btn-secondary {
             background: #6c757d;
             color: white;
-            margin-left: 10px;
         }
 
         .btn-secondary:hover {
             background: #5a6268;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         /* ── Sync Bar ── */
         .sync-bar {
-            padding: 14px 30px;
+            padding: 8px 20px;
             background: var(--bg-syncbar);
-            border-bottom: 2px solid var(--border-sync);
+            border-bottom: 1px solid var(--border-sync);
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 6px;
             transition: background 0.3s, border-color 0.3s;
-        }
-
-        .sync-bar-label {
-            font-size: 0.85em;
-            font-weight: 700;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-            margin-right: 4px;
+            position: relative;
         }
 
         .sync-divider {
             width: 1px;
-            height: 28px;
+            height: 22px;
             background: var(--border-divider);
-            margin: 0 4px;
+            margin: 0 2px;
             transition: background 0.3s;
+            flex-shrink: 0;
         }
 
         .btn-sync {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: 9px 18px;
-            border: 2px solid transparent;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1.5px solid transparent;
             border-radius: 6px;
-            font-size: 0.9em;
+            font-size: 0.82em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.2s;
             white-space: nowrap;
+            background: transparent;
+            color: var(--text-secondary);
         }
 
-        .btn-export {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
+        .btn-sync:hover {
+            background: var(--bg-controls);
+            border-color: var(--border-main);
+            color: var(--text-primary);
         }
 
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
-        }
-
-        .btn-import {
-            background: var(--bg-import-btn);
+        .btn-sync.btn-gist {
             color: #667eea;
             border-color: #667eea;
+            background: rgba(102,126,234,0.04);
         }
 
-        .btn-import:hover {
+        .btn-sync.btn-gist:hover {
             background: #667eea;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-copy-clip {
-            background: var(--bg-copy-btn);
+        .btn-sync.btn-color-labels {
             color: var(--text-secondary);
-            border-color: var(--border-main);
         }
 
-        .btn-copy-clip:hover {
+        /* ── Overflow menu (export/import/copy) ── */
+        .sync-overflow {
+            position: relative;
+        }
+
+        .btn-sync-overflow {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border: 1.5px solid var(--border-main);
+            border-radius: 6px;
+            font-size: 0.82em;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .btn-sync-overflow:hover {
             background: var(--bg-controls);
-            border-color: var(--text-muted);
-            transform: translateY(-2px);
+            color: var(--text-primary);
         }
 
-        .sync-hint {
+        .sync-overflow-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: var(--bg-modal);
+            border: 1.5px solid var(--border-main);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+            z-index: 200;
+            min-width: 170px;
+            overflow: hidden;
+        }
+
+        .sync-overflow-menu.open { display: block; }
+
+        .sync-overflow-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 14px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.15s;
+        }
+
+        .sync-overflow-item:hover {
+            background: var(--bg-controls);
+            color: var(--text-primary);
+        }
+
+        .sync-bar-right {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .sync-hint { display: none; }
+
+        #gistRetryBtn {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border: 1.5px solid #dc3545;
+            border-radius: 5px;
+            background: transparent;
+            color: #dc3545;
             font-size: 0.78em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #gistRetryBtn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .sync-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-idle    { background: var(--text-hint); }
+        .dot-syncing { background: #f7971e; animation: pulse 1s infinite; }
+        .dot-ok      { background: #11998e; }
+        .dot-error   { background: #dc3545; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        .gist-last-sync {
+            font-size: 0.75em;
             color: var(--text-hint);
-            font-style: italic;
+            white-space: nowrap;
         }
 
         /* Toast notification */
@@ -848,7 +1033,36 @@
         .task-bar-state-focus {
             background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%) !important;
         }
-        .confirm-modal-message {
+
+        /* ── State toggle (click bar to cycle) ── */
+        .gantt-row:hover .state-toggle {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .state-toggle:has(.state-btn-skip.active),
+        .state-toggle:has(.state-btn-focus.active) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .state-toggle {
+            position: absolute;
+            left: calc(260px + 6px);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 2px;
+            align-items: center;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.15s;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .state-toggle { left: calc(220px + 6px); }
+        }
             font-size: 0.95em;
             color: var(--text-secondary);
             margin-bottom: 20px;
@@ -867,37 +1081,11 @@
             box-shadow: 0 5px 15px rgba(220,53,69,0.4);
         }
 
-        .sync-bar-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #gistRetryBtn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border: 1.5px solid #dc3545;
-            border-radius: 5px;
-            background: transparent;
-            color: #dc3545;
-            font-size: 0.78em;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        #gistRetryBtn:hover {
-            background: #dc3545;
-            color: white;
-        }
-
-        .gist-last-sync {
-            font-size: 0.78em;
-            color: var(--text-hint);
-            font-style: italic;
+        .confirm-modal-message {
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
         }
 
         /* ── Color Labels Modal ── */
@@ -1203,11 +1391,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .gantt-header h2 {
-            color: var(--text-secondary);
+            font-size: 0.88em;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .btn-today {
@@ -1249,8 +1441,8 @@
         }
 
         .gantt-header-row .label-header {
-            flex: 0 0 380px;
-            width: 380px;
+            flex: 0 0 260px;
+            width: 260px;
         }
 
         .gantt-header-row .timeline-header {
@@ -1265,10 +1457,13 @@
         .label-header,
         .timeline-header {
             background: var(--bg-label-header);
-            padding: 15px;
+            padding: 12px 14px;
             font-weight: 700;
+            font-size: 0.82em;
             color: var(--text-secondary);
             border-bottom: 2px solid var(--border-gantt);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
             transition: background 0.3s, border-color 0.3s;
         }
 
@@ -1301,22 +1496,36 @@
         }
 
         .task-label {
-            flex: 0 0 380px;
-            width: 380px;
-            padding: 10px 14px;
+            flex: 0 0 260px;
+            width: 260px;
+            padding: 9px 12px;
             border-bottom: 1px solid var(--border-task);
             border-right: 1px solid var(--border-gantt);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: var(--bg-task-label);
             transition: background 0.2s;
-            min-height: 60px;
+            min-height: 54px;
             box-sizing: border-box;
         }
 
         .task-label:hover {
             background: var(--bg-task-label-hover);
+        }
+
+        /* Actions hidden until hover */
+        .task-actions {
+            flex-shrink: 0;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .task-label:hover .task-actions {
+            opacity: 1;
         }
 
         .task-timeline {
@@ -1335,7 +1544,6 @@
         .task-info {
             flex: 1;
             min-width: 0;
-            max-width: 155px;
             overflow: hidden;
         }
 
@@ -1384,52 +1592,42 @@
         }
 
         /* TIER 4 — Action buttons: ghost style, only assert on hover */
-        .task-actions {
-            flex-shrink: 0;
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
 
         .btn-edit {
             background: transparent;
             color: var(--text-muted);
             border: 1.5px solid var(--border-main);
-            padding: 5px 11px;
-            font-size: 0.75em;
+            padding: 4px 9px;
+            font-size: 0.73em;
             font-weight: 600;
             border-radius: 5px;
-            margin-right: 0;
             letter-spacing: 0.02em;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .btn-edit:hover {
             background: #667eea;
             color: white;
             border-color: #667eea;
-            transform: none;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.35);
         }
 
         .btn-danger {
             background: transparent;
-            color: var(--text-muted);
-            border: 1.5px solid var(--border-main);
-            padding: 5px 11px;
-            font-size: 0.75em;
-            font-weight: 600;
+            color: var(--text-hint);
+            border: 1.5px solid transparent;
+            padding: 4px 7px;
+            font-size: 0.8em;
+            font-weight: 700;
             border-radius: 5px;
-            letter-spacing: 0.02em;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .btn-danger:hover {
             background: #dc3545;
             color: white;
             border-color: #dc3545;
-            transform: none;
-            box-shadow: 0 2px 8px rgba(220,53,69,0.35);
         }
 
         .countdown-upcoming {
@@ -1742,77 +1940,46 @@
         }
         @media (max-width: 768px) {
             .gantt-container {
-                padding: 15px;
-            }
-            
-            .gantt-chart {
-                /* width is driven by the fixed label + timeline cells, no override needed */
+                padding: 12px;
             }
 
             .gantt-header-row .label-header {
-                flex: 0 0 290px;
-                width: 290px;
+                flex: 0 0 220px;
+                width: 220px;
             }
 
             .task-label {
-                flex: 0 0 290px;
-                width: 290px;
+                flex: 0 0 220px;
+                width: 220px;
                 padding: 8px 10px;
-                gap: 7px;
+                gap: 6px;
             }
 
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .header p {
-                font-size: 1em;
-            }
-            
             .controls {
-                padding: 20px 15px;
+                padding: 10px 14px;
             }
 
             .task-name {
                 font-size: 0.82em;
             }
-            
+
             .task-dates {
                 font-size: 0.7em;
             }
 
-            .task-countdown {
-                width: 86px;
-                font-size: 0.63em;
-            }
-            
-            .btn-danger,
-            .btn-edit {
-                padding: 4px 9px;
-                font-size: 0.7em;
-            }
-
-            .task-actions {
-                gap: 5px;
-            }
-            
             .footer {
                 flex-direction: column;
                 gap: 10px;
                 text-align: center;
             }
-            
+
             .footer-note {
                 padding-right: 0;
             }
 
             .sync-bar {
-                padding: 12px 15px;
-                gap: 8px;
-            }
-
-            .sync-hint {
-                display: none;
+                padding: 7px 14px;
+                gap: 5px;
             }
 
             /* ── Archive mobile ── */
@@ -1882,87 +2049,103 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-brand">
+                <span class="header-brand-icon">📊</span>
+                Gantt Chart
+            </div>
             <button class="dark-toggle" id="darkToggle" onclick="toggleDark()">
                 <span class="dark-toggle-icon" id="darkToggleIcon">🌙</span>
-                <span id="darkToggleLabel">Dark Mode</span>
+                <span id="darkToggleLabel">Dark</span>
             </button>
-            <h1>📊 Gantt Chart</h1>
-            <p>Plan and visualize your project timeline</p>
         </div>
 
         <div class="controls">
-            <div class="input-group">
-                <div class="input-field">
-                    <label for="taskName">Task Name</label>
-                    <input type="text" id="taskName" placeholder="Enter task name">
-                </div>
-                <div class="input-field">
-                    <label for="taskNotes">Notes <span style="font-weight:400;color:var(--text-hint)">(optional)</span></label>
-                    <textarea class="notes-textarea" id="taskNotes" placeholder="What's this task about? Any blockers?"></textarea>
-                </div>
-                <div class="input-field">
-                    <label for="startDate">Start Date</label>
-                    <input type="date" id="startDate">
-                </div>
-                <div class="input-field">
-                    <label for="endDate">End Date</label>
-                    <input type="date" id="endDate">
-                </div>
-                <div class="input-field">
-                    <label>Color</label>
-                    <div class="color-swatch-picker" id="addColorPicker"></div>
-                    <input type="hidden" id="taskColor" value="blue">
-                </div>
-                <div class="button-group">
-                    <div class="recurring-row">
-                        <input type="checkbox" id="taskRecurring">
-                        <label for="taskRecurring">↺ Recurring</label>
+            <div class="quick-add-bar">
+                <input type="text" id="taskName" placeholder="New task name…" autocomplete="off">
+                <button class="btn-expand-details" id="btnExpandDetails" onclick="toggleDetailsDrawer()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    Details
+                </button>
+                <button class="btn-add-task" onclick="addTask()">+ Add</button>
+            </div>
+
+            <div class="details-drawer" id="detailsDrawer">
+                <div class="details-grid">
+                    <div class="detail-field">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate">
                     </div>
-                    <button class="btn btn-primary" onclick="addTask()">Add Task</button>
-                    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                    <div class="detail-field">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="detail-field full-width">
+                        <label for="taskNotes">Notes <span style="font-weight:400;opacity:0.6">(optional)</span></label>
+                        <textarea class="notes-textarea" id="taskNotes" placeholder="Context, blockers, links…" style="min-height:60px;"></textarea>
+                    </div>
+                    <div class="detail-field full-width">
+                        <label>Color</label>
+                        <div class="color-swatch-picker" id="addColorPicker"></div>
+                        <input type="hidden" id="taskColor" value="blue">
+                    </div>
+                </div>
+                <div class="drawer-footer">
+                    <div class="drawer-footer-left">
+                        <div class="recurring-row">
+                            <input type="checkbox" id="taskRecurring">
+                            <label for="taskRecurring">↺ Recurring</label>
+                        </div>
+                    </div>
+                    <button class="btn-clear-all" onclick="clearAll()">Clear All Tasks</button>
                 </div>
             </div>
         </div>
 
-        <!-- ── Sync / Export-Import bar ── -->
+        <!-- ── Sync Bar ── -->
         <div class="sync-bar">
-            <span class="sync-bar-label">🔄 Sync</span>
+            <!-- Overflow menu: export / import / copy -->
+            <div class="sync-overflow" id="syncOverflow">
+                <button class="btn-sync-overflow" onclick="toggleSyncMenu()" title="Export / Import / Copy">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                    Data
+                </button>
+                <div class="sync-overflow-menu" id="syncOverflowMenu">
+                    <button class="sync-overflow-item" onclick="exportJSON(); closeSyncMenu()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export .json
+                    </button>
+                    <button class="sync-overflow-item" onclick="openImportModal(); closeSyncMenu()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 14 12 9 17 14"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Import .json
+                    </button>
+                    <button class="sync-overflow-item" onclick="copyToClipboard(); closeSyncMenu()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+
             <div class="sync-divider"></div>
 
-            <button class="btn-sync btn-export" onclick="exportJSON()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Export .json
-            </button>
-
-            <button class="btn-sync btn-import" onclick="openImportModal()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10" transform="rotate(180 12 12)"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Import .json
-            </button>
-
-            <button class="btn-sync btn-copy-clip" onclick="copyToClipboard()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy to Clipboard
-            </button>
-
             <button class="btn-sync btn-color-labels" onclick="openColorLabelsModal()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="13.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="13.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg>
                 Color Labels
             </button>
 
             <div class="sync-divider"></div>
 
             <button class="btn-sync btn-gist" id="btnGist" onclick="openGistModal()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
-                <span id="gistBtnLabel">GitHub Gist Sync</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+                <span id="gistBtnLabel">Gist Sync</span>
             </button>
 
             <div class="sync-bar-right">
-                <span id="gistSyncStatus" style="display:none; font-size:0.8em; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:4px;">
+                <span id="gistSyncStatus" style="display:flex; align-items:center; gap:5px; font-size:0.78em; font-weight:600; color:var(--text-secondary);">
                     <span class="sync-status-dot dot-idle" id="gistDot"></span>
                     <span id="gistStatusText">Idle</span>
                 </span>
-                <button id="gistRetryBtn" onclick="retryPush()" style="display:none;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+                <button id="gistRetryBtn" onclick="retryPush()">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
                     Retry
                 </button>
                 <span class="gist-last-sync" id="gistLastSync"></span>
@@ -2020,7 +2203,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v2.0.2
+                v2.1.0
             </div>
         </div>
     </div>
@@ -2274,6 +2457,27 @@
                 label.textContent = 'Dark Mode';
             }
         }
+
+        function toggleDetailsDrawer() {
+            const drawer = document.getElementById('detailsDrawer');
+            const btn    = document.getElementById('btnExpandDetails');
+            const open   = drawer.classList.toggle('open');
+            btn.classList.toggle('open', open);
+        }
+
+        function toggleSyncMenu() {
+            document.getElementById('syncOverflowMenu').classList.toggle('open');
+        }
+
+        function closeSyncMenu() {
+            document.getElementById('syncOverflowMenu').classList.remove('open');
+        }
+
+        // Close sync menu on outside click
+        document.addEventListener('click', e => {
+            const overflow = document.getElementById('syncOverflow');
+            if (overflow && !overflow.contains(e.target)) closeSyncMenu();
+        });
 
         function toggleDark() {
             const isDark = !document.documentElement.classList.contains('dark');
@@ -2938,14 +3142,12 @@
                 <div class="gantt-row">
                     <div class="task-label ${stateClass}">
                         <div class="task-info">
-                            <div class="task-name">${escapeHtml(task.name)}${task.recurring ? ' <span style="font-size:0.8em;opacity:0.7">↺</span>' : ''}</div>
+                            <div class="task-name">${escapeHtml(task.name)}${task.recurring ? ' <span style="font-size:0.8em;opacity:0.6">↺</span>' : ''}</div>
                             <div class="task-dates">${formatDate(task.startDate)} – ${formatDate(task.endDate)}</div>
-                            ${task.notes ? `<div class="task-dates" style="margin-top:2px;font-style:italic;opacity:0.8" title="${escapeHtml(task.notes)}">📝 ${escapeHtml(task.notes.length > 40 ? task.notes.slice(0,40)+'…' : task.notes)}</div>` : ''}
                         </div>
-                        ${countdownHTML}
                         <div class="task-actions">
                             <button class="btn btn-edit" onclick="openEditModal(${task.id})">Edit</button>
-                            <button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button>
+                            <button class="btn btn-danger" onclick="deleteTask(${task.id})">✕</button>
                         </div>
                     </div>
                     <div class="task-timeline">
