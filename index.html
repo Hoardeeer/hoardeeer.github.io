@@ -18,9 +18,6 @@
             --bg-gantt-chart:      #ffffff;
             --bg-footer:           #f8f9fa;
             --bg-modal:            #ffffff;
-            --bg-mode-btn:         #ffffff;
-            --bg-import-btn:       #ffffff;
-            --bg-copy-btn:         #ffffff;
             --bg-modal-cancel:     #ffffff;
             --border-main:         #dee2e6;
             --border-controls:     #e9ecef;
@@ -50,9 +47,6 @@
             --bg-gantt-chart:      #1e1e2e;
             --bg-footer:           #181825;
             --bg-modal:            #1e1e2e;
-            --bg-mode-btn:         #2a2a3e;
-            --bg-import-btn:       #1e1e2e;
-            --bg-copy-btn:         #2a2a3e;
             --bg-modal-cancel:     #2a2a3e;
             --border-main:         #3a3a5c;
             --border-controls:     #2a2a3e;
@@ -478,8 +472,6 @@
             flex-shrink: 0;
         }
 
-        .sync-hint { display: none; }
-
         #gistRetryBtn {
             display: none;
             align-items: center;
@@ -631,7 +623,7 @@
             padding: 9px 14px;
             border: 2px solid var(--border-main);
             border-radius: 6px;
-            background: var(--bg-mode-btn);
+            background: var(--bg-modal-cancel);
             font-size: 0.88em;
             font-weight: 600;
             cursor: pointer;
@@ -725,7 +717,7 @@
 
         /* ── Gist Sync ── */
         .btn-gist {
-            background: var(--bg-copy-btn);
+            background: var(--bg-modal-cancel);
             color: var(--text-secondary);
             border-color: var(--border-main);
             position: relative;
@@ -756,16 +748,6 @@
             margin-right: 5px;
             vertical-align: middle;
             flex-shrink: 0;
-        }
-
-        .dot-idle    { background: var(--text-hint); }
-        .dot-syncing { background: #f0ad4e; animation: pulse 1s infinite; }
-        .dot-ok      { background: #28a745; }
-        .dot-error   { background: #dc3545; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.3; }
         }
 
         /* Gist modal extras */
@@ -1138,7 +1120,7 @@
         }
 
         .btn-sync.btn-color-labels {
-            background: var(--bg-copy-btn);
+            background: var(--bg-modal-cancel);
             color: var(--text-secondary);
             border-color: var(--border-main);
         }
@@ -1449,11 +1431,6 @@
             flex: 1;
         }
 
-        .task-labels,
-        .task-bars {
-            display: contents;
-        }
-
         .label-header,
         .timeline-header {
             background: var(--bg-label-header);
@@ -1489,10 +1466,6 @@
         
         .day-cell:last-child {
             border-right: none;
-        }
-
-        .task-row {
-            display: contents;
         }
 
         .task-label {
@@ -1574,24 +1547,7 @@
             letter-spacing: 0.01em;
         }
 
-        .task-countdown {
-            flex-shrink: 0;
-            width: 122px;
-            padding: 4px 6px;
-            border-radius: 5px;
-            font-size: 0.67em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            text-align: center;
-            line-height: 1.4;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            opacity: 0.82;
-        }
-
-        /* TIER 4 — Action buttons: ghost style, only assert on hover */
+        /* ── Action buttons ── */
 
         .btn-edit {
             background: transparent;
@@ -1628,26 +1584,6 @@
             background: #dc3545;
             color: white;
             border-color: #dc3545;
-        }
-
-        .countdown-upcoming {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            color: #856404;
-        }
-
-        .countdown-today {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            color: #0c5460;
-        }
-
-        .countdown-overdue {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            color: #721c24;
-        }
-
-        .countdown-active {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
         }
 
         .task-timeline {
@@ -1836,9 +1772,6 @@
         .color-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
         .color-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .color-red    { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .color-gray   { background: linear-gradient(135deg, #8e9eab 0%, #b0bec5 100%); }
-        .color-amber  { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
-
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -1886,10 +1819,6 @@
             content: none;
         }
 
-        .button-group {
-            display: flex;
-        }
-        
         .footer {
             padding: 20px 30px;
             background: var(--bg-footer);
@@ -1930,14 +1859,6 @@
             margin-bottom: 6px;
         }
 
-        @media (max-width: 480px) {
-            .dark-toggle {
-                top: 12px;
-                right: 12px;
-                padding: 6px 12px;
-                font-size: 0.78em;
-            }
-        }
         @media (max-width: 768px) {
             .gantt-container {
                 padding: 12px;
@@ -2203,7 +2124,7 @@
                 Task data is stored locally in your browser via cookies. Clearing browser data will permanently erase all tasks. Use <strong>GitHub Gist Sync</strong> for automatic cross-device backup, or <strong>Export</strong> to save a local copy.
             </div>
             <div class="footer-version">
-                v2.1.0
+                v2.1.1
             </div>
         </div>
     </div>
@@ -3107,10 +3028,6 @@
             let todayLabelShown = false;
 
             sortedTasks.forEach(task => {
-                const countdown    = getTaskCountdown(task);
-                const countdownHTML = countdown
-                    ? `<div class="task-countdown ${countdown.className}">${countdown.text}</div>`
-                    : '<div class="task-countdown" style="visibility:hidden"></div>';
 
                 const taskStart    = new Date(task.startDate);
                 const taskEnd      = new Date(task.endDate);
@@ -3300,59 +3217,6 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
-        }
-
-        function getTaskCountdown(task) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const taskStart = new Date(task.startDate);
-            taskStart.setHours(0, 0, 0, 0);
-            
-            const taskEnd = new Date(task.endDate);
-            taskEnd.setHours(0, 0, 0, 0);
-            
-            const daysUntilStart = getDaysDifference(today, taskStart);
-            const daysUntilEnd = getDaysDifference(today, taskEnd);
-            
-            // Task hasn't started yet
-            if (daysUntilStart > 0) {
-                const dayText = daysUntilStart === 1 ? 'day' : 'days';
-                return {
-                    text: `Starts in ${daysUntilStart} ${dayText}`,
-                    className: 'countdown-upcoming'
-                };
-            }
-            
-            // Task starts today
-            if (daysUntilStart === 0) {
-                return {
-                    text: 'Starts today',
-                    className: 'countdown-today'
-                };
-            }
-            
-            // Task is active (started but not ended)
-            if (daysUntilStart < 0 && daysUntilEnd >= 0) {
-                const daysRemaining = daysUntilEnd + 1;
-                const dayText = daysRemaining === 1 ? 'day' : 'days';
-                return {
-                    text: `${daysRemaining} ${dayText} left`,
-                    className: 'countdown-active'
-                };
-            }
-            
-            // Task is overdue (ended)
-            if (daysUntilEnd < 0) {
-                const daysOverdue = Math.abs(daysUntilEnd);
-                const dayText = daysOverdue === 1 ? 'day' : 'days';
-                return {
-                    text: `Ended ${daysOverdue} ${dayText} ago`,
-                    className: 'countdown-overdue'
-                };
-            }
-            
-            return null;
         }
 
         // ── GitHub Gist Sync ────────────────────────────────────────────────
